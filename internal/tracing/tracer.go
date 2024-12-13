@@ -1,0 +1,109 @@
+package tracing
+
+import (
+	"context"
+	"log/slog"
+	"os"
+	"regexp"
+	"strings"
+	"sync"
+
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp"
+	"go.opentelemetry.io/otel/propagation"
+	"go.opentelemetry.io/otel/sdk/resource"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
+	semconv "go.opentelemetry.io/otel/semconv/v1.11.0"
+
+	"github.com/pgillich/mimir-multitenant_alertmanager/configs"
+	"github.com/pgillich/mimir-multitenant_alertmanager/internal/buildinfo"
+	"github.com/pgillich/mimir-multitenant_alertmanager/internal/logger"
+)
+
+type ErrorHandler struct {
+	log *slog.Logger
+}
+
+func (e *ErrorHandler) Handle(err error) {
+	e.log.Error("OTEL ERROR", logger.KeyError, err)
+}
+
+var errorHandler = &ErrorHandler{} //nolint:gochecknoglobals // local once
+var onceSetOtel sync.Once          //nolint:gochecknoglobals // local once
+var onceBodySetOtel = func() {     //nolint:gochecknoglobals // local once
+	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(propagation.TraceContext{}, propagation.Baggage{}))
+	otel.SetErrorHandler(errorHandler)
+	// TODO logr --> slog, see: https://github.com/go-logr/logr/pull/196
+	//otel.SetLogger(*errorHandler.log)
+}
+
+func SetErrorHandlerLogger(log *slog.Logger) {
+	errorHandler.log = log
+}
+
+const (
+	StateKeyClientCommand = "client_command"
+	//StateKeyOidcCommand   = "oidc_command"
+	SpanKeyComponent = "component"
+	SpanKeyService   = "service"
+	SpanKeyInstance  = "instance"
+)
+
+var (
+	SpanKeyComponentValue = buildinfo.GetAppName()
+)
+
+func InitTracer(exporter sdktrace.SpanExporter, sampler sdktrace.Sampler, appName string, service string, instance string, command string, log *slog.Logger) *sdktrace.TracerProvider {
+	// For the demonstration, use sdktrace.AlwaysSample sampler to sample all traces.
+	// In a production application, use sdktrace.ProbabilitySampler with a desired probability.
+	// semconv keys are defined in https://github.com/open-telemetry/opentelemetry-specification/tree/main/semantic_conventions/trace
+	attrs := []attribute.KeyValue{
+		semconv.ServiceNamespaceKey.String(appName),
+		semconv.ServiceNameKey.String(service),
+		semconv.ServiceInstanceIDKey.String(instance),
+		semconv.ServiceVersionKey.String(buildinfo.Version),
+		attribute.Int("attrID", os.Getpid()),
+	}
+	if command != "" {
+		attrs = append(attrs, attribute.String(StateKeyClientCommand, command))
+	}
+	providerOptions := []sdktrace.TracerProviderOption{
+		sdktrace.WithSampler(sampler),
+		sdktrace.WithResource(resource.NewWithAttributes(semconv.SchemaURL, attrs...)),
+	}
+	if exporter != nil {
+		providerOptions = append(providerOptions, sdktrace.WithBatcher(exporter))
+	}
+	tp := sdktrace.NewTracerProvider(providerOptions...)
+
+	if errorHandler.log == nil {
+		errorHandler.log = log
+	}
+	onceSetOtel.Do(onceBodySetOtel)
+
+	return tp
+}
+
+func OtlpProvider(ctx context.Context, tracerUrl string) (sdktrace.SpanExporter, error) {
+	if tracerUrl == "" || tracerUrl == "-" {
+		return nil, nil
+	}
+
+	return otlptracehttp.New(ctx, otlptracehttp.WithEndpointURL(tracerUrl))
+}
+
+var invalidTracestateValueRe = regexp.MustCompile(`[^\x20-\x2b\x2d-\x3c\x3e-\x7e]`)
+
+func EncodeTracestateValue(value string) string {
+	return invalidTracestateValueRe.ReplaceAllString(strings.TrimSpace(value), "_")
+}
+
+func Version() string {
+	return configs.TracerVersion
+}
+
+// SemVersion is the semantic version to be supplied to tracer/meter creation.
+func SemVersion() string {
+	return "semver:" + Version()
+}

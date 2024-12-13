@@ -13,6 +13,12 @@ DOCKER_MDLINT_VERSION ?= v0.15.0
 DOCKER_MDLINT_IMAGE ?= markdownlint-cli2:${DOCKER_MDLINT_VERSION}
 DOCKER_MDLINT_PATH ?= davidanson
 
+DOCKER_OGEN_VERSION ?= v1.8.1
+DOCKER_OGEN_IMAGE ?= ogen:${DOCKER_OGEN_VERSION}
+DOCKER_OGEN_PATH ?= ghcr.io/ogen-go
+
+OAPI_CODEGEN_VERSION ?= v2.4.1
+
 API_PACKAGE_NAME ?= multitenant_alertmanager
 APP_NAME ?= ${API_PACKAGE_NAME}
 
@@ -25,6 +31,10 @@ GO_TEST_FLAGS ?=
 GO_TEST_EXCLUDES ?= /api
 GO_LINT_CONFIG ?= .golangci.yaml
 SHELLCHECK_SOURCEPATH ?= ${BUILD_SCRIPTS_DIR}
+GO_CACHE_SRC ?= build/go-cache
+GO_CACHE ?= ${SRC_DIR}/${GO_CACHE_SRC}
+GO_MODCACHE_SRC ?= build/go-modcache
+GO_MODCACHE ?= ${SRC_DIR}/${GO_MODCACHE_SRC}
 
 BUILD_VERSION ?= $(shell git describe --tags --always --dirty || echo "v0.0.0")
 BUILD_TIME = $(shell date +%FT%T%z)
@@ -38,6 +48,8 @@ DEBUG_SCRIPTS ?=
 
 DOCKER_RUN_FLAGS ?= --user $$(id -u):$$(id -g) \
 	--network host \
+	--mount=type=bind,source=$(shell readlink -e ${GO_CACHE_SRC}),target=${GO_CACHE} \
+	--mount=type=bind,source=$(shell readlink -e ${GO_MODCACHE_SRC}),target=${GO_MODCACHE} \
 	-v /etc/group:/etc/group:ro \
 	-v /etc/passwd:/etc/passwd:ro \
 	-v /etc/shadow:/etc/shadow:ro \
@@ -50,6 +62,8 @@ DOCKER_RUN_FLAGS ?= --user $$(id -u):$$(id -g) \
 	-e BUILD_VERSION=${BUILD_VERSION} \
 	-e BUILD_TIME=${BUILD_TIME} \
 	-e CGO_ENABLED=0 \
+	-e GOCACHE=${GO_CACHE} \
+	-e GOMODCACHE=${GO_MODCACHE} \
 	-e GO_BUILD_FLAGS=${GO_BUILD_FLAGS} \
 	-e GO_TEST_FLAGS=${GO_TEST_FLAGS} \
 	-e GO_TEST_EXCLUDES=${GO_TEST_EXCLUDES} \
@@ -61,13 +75,42 @@ DOCKER_RUN_FLAGS ?= --user $$(id -u):$$(id -g) \
 
 DOCKERFILE_APP_DIR ?= build
 
+install-oapi-codegen:
+	go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@${OAPI_CODEGEN_VERSION}
+
+generate:
+	mkdir -p build/go-cache build/go-modcache
+	docker run ${DOCKER_RUN_FLAGS} \
+		${DOCKER_URL_PATH}/${DOCKER_BUILDER_IMAGE} \
+		bash -c ${BUILD_SCRIPTS_DIR}/generate.sh
+.PHONY: generate
+
 build:
+	mkdir -p build/go-cache build/go-modcache
 	docker run ${DOCKER_RUN_FLAGS} \
 		${DOCKER_URL_PATH}/${DOCKER_BUILDER_IMAGE} \
 		bash -c ${BUILD_SCRIPTS_DIR}/build.sh
 .PHONY: build
 
+build-local:
+	go build \
+		-v \
+		-o "./build/bin/${APP_NAME}"
+.PHONY: build-local
+
+clean:
+	sudo rm -rf build/go-cache/* build/go-modcache/*
+.PHONY: clean
+
+openapi-server-ogen:
+	docker run ${DOCKER_RUN_FLAGS} \
+		${DOCKER_OGEN_PATH}/${DOCKER_OGEN_IMAGE} \
+		-target ${SRC_DIR}/pkg/api/ogen/alertmanager \
+		-clean \
+		${SRC_DIR}/api/alertmanager/openapi_v3_ogen.yaml
+
 tidy:
+	mkdir -p build/go-cache build/go-modcache
 	docker run ${DOCKER_RUN_FLAGS} \
 		${DOCKER_URL_PATH}/${DOCKER_BUILDER_IMAGE} \
 		bash -c ${BUILD_SCRIPTS_DIR}/tidy.sh

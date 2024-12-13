@@ -1,0 +1,7 @@
+listenaddr: localhost:9093
+alerts:
+  alertmanagerUrl: "http://localhost:8085/alertmanager/api/v2"
+  tenantlabel: "tenant"
+  tenants:
+  - "devops"
+  - "app-development"

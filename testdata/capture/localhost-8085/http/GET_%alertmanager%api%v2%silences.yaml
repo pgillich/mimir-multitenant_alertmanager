@@ -1,0 +1,268 @@
+---
+#GET http://localhost:8085/alertmanager/api/v2/silences 200 OK
+#2024-12-13 19:12:28
+request:
+  method: GET
+  url: http://localhost:8085/alertmanager/api/v2/silences
+  proto: HTTP/1.1
+  protomajor: 1
+  protominor: 1
+  header:
+    Traceparent:
+    - 00-80a4be17bc8c42495d74394ac8dc4aa7-f0285264af317343-01
+    Tracestate:
+    - client_command=GET /alertmanager/api/v2/silences
+    X-Scope-Orgid:
+    - devops
+  body: null
+  contentlength: 0
+  transferencoding: []
+  close: false
+  host: localhost:8085
+  form: {}
+  postform: {}
+  multipartform: null
+  trailer: {}
+  remoteaddr: ""
+  requesturi: ""
+  testTimestamp: 2024-12-13 19:12:28
+response:
+  status: 200 OK
+  statuscode: 200
+  proto: HTTP/1.1
+  protomajor: 1
+  protominor: 1
+  header:
+    Cache-Control:
+    - no-store
+    Connection:
+    - keep-alive
+    Content-Type:
+    - application/json
+    Date:
+    - Fri, 13 Dec 2024 18:12:28 GMT
+    Server:
+    - nginx/1.27.3
+    Vary:
+    - Accept-Encoding
+    - Origin
+  body: |
+    [
+      {
+        "comment": "created 2024-12-13 19:00",
+        "createdBy": "admin",
+        "endsAt": "2024-12-13T20:00:17.563Z",
+        "id": "4d981ec9-1b91-43de-af9a-4d34461d33e4",
+        "matchers": [
+          {
+            "isEqual": true,
+            "isRegex": false,
+            "name": "alertname",
+            "value": "KubeContainerCPUHigh"
+          },
+          {
+            "isEqual": true,
+            "isRegex": false,
+            "name": "cluster",
+            "value": "org-dev-aks-001"
+          },
+          {
+            "isEqual": true,
+            "isRegex": false,
+            "name": "container",
+            "value": "distributor"
+          },
+          {
+            "isEqual": true,
+            "isRegex": false,
+            "name": "cpu",
+            "value": "total"
+          },
+          {
+            "isEqual": true,
+            "isRegex": false,
+            "name": "id",
+            "value": "/kubepods.slice/kubepods-burstable.slice/kubepods-burstable-pod3d7a87ba_b62b_472f_85ec_bae54336053d.slice/cri-containerd-2d9eb8e39e2a2da3a9f72990fa4e233a4f6b8eab3c65a260bedb28ef7012f155.scope"
+          },
+          {
+            "isEqual": true,
+            "isRegex": false,
+            "name": "instance",
+            "value": "aks-nodepool0-62222954-vmss000000"
+          },
+          {
+            "isEqual": true,
+            "isRegex": false,
+            "name": "job",
+            "value": "integrations/kubernetes/cadvisor"
+          }
+        ],
+        "startsAt": "2024-12-13T18:00:50.469Z",
+        "status": {
+          "state": "active"
+        },
+        "updatedAt": "2024-12-13T18:00:50.469Z"
+      },
+      {
+        "comment": "created 2024-12-13 19:01",
+        "createdBy": "admin",
+        "endsAt": "2024-12-13T20:01:47.192Z",
+        "id": "340436aa-efde-40aa-9b9f-1e38b2097aec",
+        "matchers": [
+          {
+            "isEqual": true,
+            "isRegex": false,
+            "name": "alertname",
+            "value": "ArgocdServiceNotSynced"
+          },
+          {
+            "isEqual": true,
+            "isRegex": false,
+            "name": "autosync_enabled",
+            "value": "true"
+          },
+          {
+            "isEqual": true,
+            "isRegex": false,
+            "name": "cluster",
+            "value": "org-dev-aks-002"
+          },
+          {
+            "isEqual": true,
+            "isRegex": false,
+            "name": "dest_namespace",
+            "value": "kyverno"
+          },
+          {
+            "isEqual": true,
+            "isRegex": false,
+            "name": "dest_server",
+            "value": "https://kubernetes.default.svc"
+          },
+          {
+            "isEqual": true,
+            "isRegex": false,
+            "name": "health_status",
+            "value": "Healthy"
+          },
+          {
+            "isEqual": true,
+            "isRegex": false,
+            "name": "instance",
+            "value": "argocd-application-controller-metrics.argocd.svc:8082"
+          },
+          {
+            "isEqual": true,
+            "isRegex": false,
+            "name": "job",
+            "value": "prometheus.scrape.annotation_autodiscovery_http"
+          },
+          {
+            "isEqual": true,
+            "isRegex": false,
+            "name": "name",
+            "value": "policy-bundle"
+          },
+          {
+            "isEqual": true,
+            "isRegex": false,
+            "name": "namespace",
+            "value": "argocd"
+          },
+          {
+            "isEqual": true,
+            "isRegex": false,
+            "name": "project",
+            "value": "cluster-bootstrap"
+          },
+          {
+            "isEqual": true,
+            "isRegex": false,
+            "name": "repo",
+            "value": "https://nexus.devspace-dev.company.int/repository/application-platform-charts/"
+          },
+          {
+            "isEqual": true,
+            "isRegex": false,
+            "name": "severity",
+            "value": "warning"
+          },
+          {
+            "isEqual": true,
+            "isRegex": false,
+            "name": "sync_status",
+            "value": "OutOfSync"
+          }
+        ],
+        "startsAt": "2024-12-13T18:01:56.283Z",
+        "status": {
+          "state": "active"
+        },
+        "updatedAt": "2024-12-13T18:01:56.283Z"
+      }
+    ]
+  contentlength: -1
+  transferencoding: []
+  close: false
+  uncompressed: true
+  trailer: {}
+  testTimestamp: 2024-12-13 19:12:28
+
+---
+#GET http://localhost:8085/alertmanager/api/v2/silences 200 OK
+#2024-12-13 19:12:28
+request:
+  method: GET
+  url: http://localhost:8085/alertmanager/api/v2/silences
+  proto: HTTP/1.1
+  protomajor: 1
+  protominor: 1
+  header:
+    Traceparent:
+    - 00-80a4be17bc8c42495d74394ac8dc4aa7-b0d794f41959b027-01
+    Tracestate:
+    - client_command=GET /alertmanager/api/v2/silences
+    X-Scope-Orgid:
+    - app-development
+  body: null
+  contentlength: 0
+  transferencoding: []
+  close: false
+  host: localhost:8085
+  form: {}
+  postform: {}
+  multipartform: null
+  trailer: {}
+  remoteaddr: ""
+  requesturi: ""
+  testTimestamp: 2024-12-13 19:12:28
+response:
+  status: 200 OK
+  statuscode: 200
+  proto: HTTP/1.1
+  protomajor: 1
+  protominor: 1
+  header:
+    Cache-Control:
+    - no-store
+    Connection:
+    - keep-alive
+    Content-Length:
+    - "2"
+    Content-Type:
+    - application/json
+    Date:
+    - Fri, 13 Dec 2024 18:12:28 GMT
+    Server:
+    - nginx/1.27.3
+    Vary:
+    - Accept-Encoding
+    - Origin
+  body: "[]"
+  contentlength: 2
+  transferencoding: []
+  close: false
+  uncompressed: false
+  trailer: {}
+  testTimestamp: 2024-12-13 19:12:28
+

@@ -26,5 +26,7 @@ go.work.sum
 
 __debug_bin*
 build/bin/
+build/go-cache/
+build/go-modcache/
 mimir-multitenant_alertmanager
-.vscode/launch.json
+.vscode/*

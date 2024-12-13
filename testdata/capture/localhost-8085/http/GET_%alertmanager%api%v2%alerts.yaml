@@ -1,0 +1,226 @@
+---
+#GET http://localhost:8085/alertmanager/api/v2/alerts 200 OK
+#2024-12-12 21:50:07
+request:
+  method: GET
+  url: http://localhost:8085/alertmanager/api/v2/alerts
+  proto: HTTP/1.1
+  protomajor: 1
+  protominor: 1
+  header:
+    Traceparent:
+    - 00-2ae5c38daf71b72563ec2b87f8f64091-479fa47e27e18177-01
+    Tracestate:
+    - client_command=GET /alertmanager/api/v2/alerts
+    X-Scope-Orgid:
+    - devops
+  body: null
+  contentlength: 0
+  transferencoding: []
+  close: false
+  host: localhost:8085
+  form: {}
+  postform: {}
+  multipartform: null
+  trailer: {}
+  remoteaddr: ""
+  requesturi: ""
+  testTimestamp: 2024-12-12 21:50:07
+response:
+  status: 200 OK
+  statuscode: 200
+  proto: HTTP/1.1
+  protomajor: 1
+  protominor: 1
+  header:
+    Cache-Control:
+    - no-store
+    Connection:
+    - keep-alive
+    Content-Type:
+    - application/json
+    Date:
+    - Thu, 12 Dec 2024 20:50:07 GMT
+    Server:
+    - nginx/1.27.3
+    Vary:
+    - Accept-Encoding
+    - Origin
+  body: |
+    [
+      {
+        "annotations": {
+          "description": "The container is using more than 50% for 1 minutes.",
+          "summary": "Container CPU usage is above 50% for 1 minutes"
+        },
+        "endsAt": "2024-12-13T10:21:28.859Z",
+        "fingerprint": "c0243d5252b1eb49",
+        "receivers": [
+          {
+            "name": "default-receiver"
+          },
+          {
+            "name": "John Doe"
+          }
+        ],
+        "startsAt": "2024-12-11T13:06:28.859Z",
+        "status": {
+          "inhibitedBy": [],
+          "silencedBy": [],
+          "state": "active"
+        },
+        "updatedAt": "2024-12-13T10:16:28.895Z",
+        "generatorURL": "/graph?g0.expr=rate%28container_cpu_usage_seconds_total%5B5m%5D%29+%3E+0.5&g0.tab=1",
+        "labels": {
+          "alertname": "KubeContainerCPUHigh",
+          "cluster": "org-dev-aks-001",
+          "container": "distributor",
+          "cpu": "total",
+          "id": "/kubepods.slice/kubepods-burstable.slice/kubepods-burstable-pod3d7a87ba_b62b_472f_85ec_bae54336053d.slice/cri-containerd-2d9eb8e39e2a2da3a9f72990fa4e233a4f6b8eab3c65a260bedb28ef7012f155.scope",
+          "image": "docker.io/grafana/mimir:2.14.0",
+          "instance": "aks-nodepool0-62222954-vmss000000",
+          "job": "integrations/kubernetes/cadvisor",
+          "name": "2d9eb8e39e2a2da3a9f72990fa4e233a4f6b8eab3c65a260bedb28ef7012f155",
+          "namespace": "mimir",
+          "pod": "mimir-distributor-5888fd4c69-84zrp",
+          "severity": "warning"
+        }
+      },
+      {
+        "annotations": {
+          "description": "Service policy-bundle or  run by ArgoCD is currently not in sync",
+          "impact": "Application components can be outdated",
+          "solution": "Check ArgoCD UI for details",
+          "summary": "ArgoCD service policy-bundle (namespace kyverno) not synced on cluster ",
+          "value": "1"
+        },
+        "endsAt": "2024-12-13T10:21:12.660Z",
+        "fingerprint": "9cec92cd0b77b01f",
+        "receivers": [
+          {
+            "name": "default-receiver"
+          }
+        ],
+        "startsAt": "2024-12-12T08:16:12.660Z",
+        "status": {
+          "inhibitedBy": [],
+          "silencedBy": [],
+          "state": "active"
+        },
+        "updatedAt": "2024-12-13T10:16:12.646Z",
+        "generatorURL": "/graph?g0.expr=argocd_app_info%7Bsync_status%21%3D%22Synced%22%7D+%21%3D+0&g0.tab=1",
+        "labels": {
+          "alertname": "ArgocdServiceNotSynced",
+          "autosync_enabled": "true",
+          "cluster": "org-dev-aks-002",
+          "dest_namespace": "kyverno",
+          "dest_server": "https://kubernetes.default.svc",
+          "health_status": "Healthy",
+          "instance": "argocd-application-controller-metrics.argocd.svc:8082",
+          "job": "prometheus.scrape.annotation_autodiscovery_http",
+          "name": "policy-bundle",
+          "namespace": "argocd",
+          "project": "cluster-bootstrap",
+          "repo": "https://nexus.devspace-dev.company.int/repository/application-platform-charts/",
+          "severity": "warning",
+          "sync_status": "OutOfSync"
+        }
+      }
+    ]  
+  contentlength: -1
+  transferencoding:
+  - chunked
+  close: false
+  uncompressed: true
+  trailer: {}
+  testTimestamp: 2024-12-12 21:50:07
+
+---
+#GET http://localhost:8085/alertmanager/api/v2/alerts 200 OK
+#2024-12-12 21:50:11
+request:
+  method: GET
+  url: http://localhost:8085/alertmanager/api/v2/alerts
+  proto: HTTP/1.1
+  protomajor: 1
+  protominor: 1
+  header:
+    Traceparent:
+    - 00-2ae5c38daf71b72563ec2b87f8f64091-479fa47e27e18177-01
+    Tracestate:
+    - client_command=GET /alertmanager/api/v2/alerts
+    X-Scope-Orgid:
+    - app-development
+  body: null
+  contentlength: 0
+  transferencoding: []
+  close: false
+  host: localhost:8085
+  form: {}
+  postform: {}
+  multipartform: null
+  trailer: {}
+  remoteaddr: ""
+  requesturi: ""
+  testTimestamp: 2024-12-12 21:50:11
+response:
+  status: 200 OK
+  statuscode: 200
+  proto: HTTP/1.1
+  protomajor: 1
+  protominor: 1
+  header:
+    Cache-Control:
+    - no-store
+    Connection:
+    - keep-alive
+    Content-Type:
+    - application/json
+    Date:
+    - Thu, 12 Dec 2024 20:50:11 GMT
+    Server:
+    - nginx/1.27.3
+    Vary:
+    - Accept-Encoding
+    - Origin
+  body: |
+    [
+      {
+        "annotations": {},
+        "endsAt": "2024-12-13T10:39:40.785Z",
+        "fingerprint": "3b1f00be786a41f",
+        "receivers": [
+          {
+            "name": "Alerta_Test_MLT"
+          }
+        ],
+        "startsAt": "2024-12-13T07:04:40.785Z",
+        "status": {
+          "inhibitedBy": [],
+          "silencedBy": [],
+          "state": "active"
+        },
+        "updatedAt": "2024-12-13T10:34:40.773Z",
+        "generatorURL": "/graph?g0.expr=healthcheck+%3E+0&g0.tab=1",
+        "labels": {
+          "alertname": "Service Unhealthy (Dev)",
+          "application": "GraphicalDataStorage",
+          "component": "CMP",
+          "customer": "CUST",
+          "entity": "overall",
+          "env_name": "SME",
+          "env_type": "Test",
+          "exported_instance": "nodef01.company.int:8778",
+          "exported_job": "CUST_SME_apps",
+          "gateway_name": "app-development",
+          "instance": "noded01.company.int:8931",
+          "job": "prometheus.scrape.org_sme",
+          "lls_hostname": "appdevgraylog.company.int",
+          "purpose": "dev",
+          "sourcehost": "nodef01.company.int",
+          "uuid": "7c483ac8-1189-4459-b878-8f849a8143c5",
+          "version": "2.0.3",
+          "zone": "eu-west-1"
+        }
+      }
+    ]

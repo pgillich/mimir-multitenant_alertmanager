@@ -1,10 +1,6 @@
 run:
-  skip-dirs:
-    - testdata
-    - internal/models
-    - internal/restapi
   tests: true
-  go: '1.22'
+  go: '1.23'
 
 linters-settings:
   errcheck:
@@ -12,10 +8,10 @@ linters-settings:
     check-blank: true
   gocyclo:
     min-complexity: 12
-  golint:
-    min-confidence: 0
   govet:
-    check-shadowing: true
+    settings:
+      shadow: 
+        strict: true
   goconst:
     min-occurrences: 4
   gofmt:
@@ -78,6 +74,10 @@ linters:
     - depguard
     - nlreturn
 issues:
+  exclude-dirs:
+    - testdata
+    - internal/models
+    - internal/restapi
   exclude-use-default: false
   exclude-rules:
     - path: .*_test\.go
