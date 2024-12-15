@@ -107,6 +107,8 @@ func ChiTracerMiddleware(tr trace.Tracer, instance string) func(next http.Handle
 
 			r = r.WithContext(ctx)
 			next.ServeHTTP(w, r)
+
+			span.End()
 		}
 
 		return http.HandlerFunc(fn)

@@ -85,12 +85,11 @@ func InitTracer(exporter sdktrace.SpanExporter, sampler sdktrace.Sampler, appNam
 	return tp
 }
 
-func OtlpProvider(ctx context.Context, tracerUrl string) (sdktrace.SpanExporter, error) {
-	if tracerUrl == "" || tracerUrl == "-" {
+func OtlpProvider(ctx context.Context, options ...otlptracehttp.Option) (sdktrace.SpanExporter, error) {
+	if len(options) == 0 {
 		return nil, nil
 	}
-
-	return otlptracehttp.New(ctx, otlptracehttp.WithEndpointURL(tracerUrl))
+	return otlptracehttp.New(ctx, options...)
 }
 
 var invalidTracestateValueRe = regexp.MustCompile(`[^\x20-\x2b\x2d-\x3c\x3e-\x7e]`)

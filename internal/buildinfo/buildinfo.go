@@ -1,9 +1,9 @@
 package buildinfo
 
 import (
-	"os"
-
-	"golang.org/x/mod/modfile"
+	"path"
+	"reflect"
+	"runtime"
 )
 
 // Version is set by the linker.
@@ -29,21 +29,10 @@ func GetAppName() string {
 }
 
 func ModulePath() string {
-	var err error
-	var data []byte
-	files := []string{"go.mod", "../go.mod", "../../go.mod"}
-	for _, file := range files {
-		data, err = os.ReadFile(file)
-		if err == nil {
-			break
-		}
-	}
-	if err != nil {
-		panic(err)
-	}
-	modFile, err := modfile.Parse("go.mod", data, nil)
-	if err != nil {
-		panic(err)
-	}
-	return modFile.Module.Mod.Path
+	value := reflect.ValueOf(ModulePath)
+	ptr := value.Pointer()
+	ffp := runtime.FuncForPC(ptr)
+	modulePath := path.Dir(path.Dir(ffp.Name()))
+
+	return modulePath
 }

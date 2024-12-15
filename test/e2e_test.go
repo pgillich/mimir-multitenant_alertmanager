@@ -42,7 +42,7 @@ func (s *E2ETestSuite) TestAlerts() {
 		CaptureTransportMode: mw_client_model.CaptureTransportModeFake,
 		CaptureDir:           "../testdata/capture",
 		CaptureMatchers: []mw_client_model.CaptureMatcher{
-			mw_client.CaptureEqualRequestURLAndHeader("X-Scope-OrgID"),
+			mw_client.CaptureEqualRequestURLAndHeader(configs.HttpHeaderXscopeorgid),
 		},
 	}
 
@@ -84,7 +84,7 @@ func (s *E2ETestSuite) TestAlertGroups() {
 		CaptureTransportMode: mw_client_model.CaptureTransportModeFake,
 		CaptureDir:           "../testdata/capture",
 		CaptureMatchers: []mw_client_model.CaptureMatcher{
-			mw_client.CaptureEqualRequestURLAndHeader("X-Scope-OrgID"),
+			mw_client.CaptureEqualRequestURLAndHeader(configs.HttpHeaderXscopeorgid),
 		},
 	}
 
@@ -126,7 +126,7 @@ func (s *E2ETestSuite) TestSilences() {
 		CaptureTransportMode: mw_client_model.CaptureTransportModeFake,
 		CaptureDir:           "../testdata/capture",
 		CaptureMatchers: []mw_client_model.CaptureMatcher{
-			mw_client.CaptureEqualRequestURLAndHeader("X-Scope-OrgID"),
+			mw_client.CaptureEqualRequestURLAndHeader(configs.HttpHeaderXscopeorgid),
 		},
 	}
 

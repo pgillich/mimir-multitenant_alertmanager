@@ -10,6 +10,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	chi_middleware "github.com/go-chi/chi/v5/middleware"
+	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	"go.opentelemetry.io/otel/trace"
 
@@ -110,7 +111,13 @@ func PrepareService(ctx context.Context, appName string, service model.HttpServi
 	hostname, _ := os.Hostname() //nolint:errcheck // not important
 	deferFn := func() {}
 
-	traceExporter, err := tracing.OtlpProvider(ctx, serverConfig.TracerUrl)
+	traceOptions := []otlptracehttp.Option{}
+	if serverConfig.TracerUrl != "" {
+		traceOptions = append(traceOptions, otlptracehttp.WithEndpointURL(serverConfig.TracerUrl))
+		traceOptions = append(traceOptions, otlptracehttp.WithCompression(otlptracehttp.NoCompression))
+		traceOptions = append(traceOptions, otlptracehttp.WithInsecure())
+	}
+	traceExporter, err := tracing.OtlpProvider(ctx, traceOptions...)
 	if err != nil {
 		return deferFn, logger.Wrap(errors.New("unable to get OtlpProvider"), err)
 	}

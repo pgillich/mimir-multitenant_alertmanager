@@ -22,7 +22,7 @@ import (
 )
 
 const (
-	ServiceName       = "alertmanager"
+	ServiceName       = "multitenant-alertmanager"
 	TargetServiceName = "mimir_alertmanager"
 )
 

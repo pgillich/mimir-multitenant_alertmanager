@@ -8,6 +8,7 @@ import (
 
 	prom_model "github.com/prometheus/common/model"
 
+	"github.com/pgillich/mimir-multitenant_alertmanager/configs"
 	"github.com/pgillich/mimir-multitenant_alertmanager/internal/logger"
 	"github.com/pgillich/mimir-multitenant_alertmanager/pkg/alertmanager/api"
 )
@@ -34,7 +35,9 @@ func (s *ApiServer) GetAlerts(w http.ResponseWriter, r *http.Request, params api
 	alerts := []api.GettableAlert{}
 
 	for _, tenant := range s.service.serverConfig.Alerts.Tenants {
-		mimirResp, err := s.service.mimirClient.GetAlertsWithResponse(r.Context(), &params, RequestHeaderSet("X-Scope-OrgID", tenant))
+		mimirResp, err := s.service.mimirClient.GetAlertsWithResponse(
+			r.Context(), &params, RequestHeaderSet(configs.HttpHeaderXscopeorgid, tenant),
+		)
 		if err != nil {
 			err = logger.Wrap(ErrMimirResponse, err)
 			log.Error("Unable to GetAlerts", logger.KeyError, err)
@@ -76,7 +79,9 @@ func (s *ApiServer) GetAlertGroups(w http.ResponseWriter, r *http.Request, param
 	alertGroups := []api.AlertGroup{}
 
 	for _, tenant := range s.service.serverConfig.Alerts.Tenants {
-		mimirResp, err := s.service.mimirClient.GetAlertGroupsWithResponse(r.Context(), &params, RequestHeaderSet("X-Scope-OrgID", tenant))
+		mimirResp, err := s.service.mimirClient.GetAlertGroupsWithResponse(
+			r.Context(), &params, RequestHeaderSet(configs.HttpHeaderXscopeorgid, tenant),
+		)
 		if err != nil {
 			err = logger.Wrap(ErrMimirResponse, err)
 			log.Error("Unable to GetAlerts", logger.KeyError, err)
@@ -124,7 +129,9 @@ func (s *ApiServer) GetSilences(w http.ResponseWriter, r *http.Request, params a
 	silences := []api.GettableSilence{}
 
 	for _, tenant := range s.service.serverConfig.Alerts.Tenants {
-		mimirResp, err := s.service.mimirClient.GetSilencesWithResponse(r.Context(), &params, RequestHeaderSet("X-Scope-OrgID", tenant))
+		mimirResp, err := s.service.mimirClient.GetSilencesWithResponse(
+			r.Context(), &params, RequestHeaderSet(configs.HttpHeaderXscopeorgid, tenant),
+		)
 		if err != nil {
 			err = logger.Wrap(ErrMimirResponse, err)
 			log.Error("Unable to GetSilences", logger.KeyError, err)
