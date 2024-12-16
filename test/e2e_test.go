@@ -46,10 +46,10 @@ func (s *E2ETestSuite) TestAlerts() {
 		},
 	}
 
-	server := runTestServerCmd(s.T(), "services", serverConfig, testConfig, []string{"alertmanager"}, log)
+	server := runTestServerCmd(s.T(), "services", serverConfig, testConfig, []string{"multitenant-alertmanager"}, log)
 	defer server.cancel()
 
-	testRootUrl, err := url.JoinPath(server.testServer.URL, "/alertmanager/api/v2")
+	testRootUrl, err := url.JoinPath(server.testServer.URL, "/multitenant-alertmanager/api/v2")
 	s.NoError(err, "testRootUrl")
 	mimirClient, err := pkg_api.NewClientWithResponses(
 		testRootUrl,
@@ -88,10 +88,10 @@ func (s *E2ETestSuite) TestAlertGroups() {
 		},
 	}
 
-	server := runTestServerCmd(s.T(), "services", serverConfig, testConfig, []string{"alertmanager"}, log)
+	server := runTestServerCmd(s.T(), "services", serverConfig, testConfig, []string{"multitenant-alertmanager"}, log)
 	defer server.cancel()
 
-	testRootUrl, err := url.JoinPath(server.testServer.URL, "/alertmanager/api/v2")
+	testRootUrl, err := url.JoinPath(server.testServer.URL, "/multitenant-alertmanager/api/v2")
 	s.NoError(err, "testRootUrl")
 	mimirClient, err := pkg_api.NewClientWithResponses(
 		testRootUrl,
