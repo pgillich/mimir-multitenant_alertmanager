@@ -19,10 +19,10 @@ import (
 
 	yaml "github.com/goccy/go-yaml"
 
-	"github.com/pgillich/mimir-multitenant_alertmanager/internal/logger"
-	"github.com/pgillich/mimir-multitenant_alertmanager/internal/middleware/client/model"
-	mw_client_model "github.com/pgillich/mimir-multitenant_alertmanager/internal/middleware/client/model"
-	"github.com/pgillich/mimir-multitenant_alertmanager/internal/utils"
+	"github.com/pgillich/mimir-multitenant_alertmanager/pkg/logger"
+	"github.com/pgillich/mimir-multitenant_alertmanager/pkg/middleware/client/model"
+	mw_client_model "github.com/pgillich/mimir-multitenant_alertmanager/pkg/middleware/client/model"
+	"github.com/pgillich/mimir-multitenant_alertmanager/pkg/utils"
 )
 
 var ErrCapNotMatch = errors.New("capture not match")

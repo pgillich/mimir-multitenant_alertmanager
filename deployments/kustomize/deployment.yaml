@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: multitenant-alertmanager
+  name: multitenant-alerts
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: multitenant-alertmanager
+      app: multitenant-alerts
   template:
     metadata:
       labels:
-        app: multitenant-alertmanager
+        app: multitenant-alerts
     spec:
       containers:
-      - name: multitenant-alertmanager
-        image: pgillich/multitenant-alertmanager:v0.1.0-8
-        command: ["/usr/local/bin/multitenant-alertmanager", "services", "multitenant-alertmanager", "--config", "/multitenant_alertmanager.yaml"]
+      - name: multitenant-alerts
+        image: pgillich/multitenant-alerts:v0.1.1
+        command: ["/usr/local/bin/multitenant-alerts", "services", "multitenant-alerts", "--config", "/multitenant_alerts.yaml"]
         resources:
           limits:
             memory: "512Mi"
@@ -25,9 +25,9 @@ spec:
             cpu: "100m"
         volumeMounts:
         - name: config-volume
-          mountPath: /multitenant_alertmanager.yaml
-          subPath: multitenant_alertmanager.yaml
+          mountPath: /multitenant_alerts.yaml
+          subPath: multitenant_alerts.yaml
       volumes:
       - name: config-volume
         configMap:
-          name: multitenant-alertmanager-config
+          name: multitenant-alerts-config

@@ -30,9 +30,10 @@ import (
 	"github.com/spf13/viper"
 
 	"github.com/pgillich/mimir-multitenant_alertmanager/configs"
-	"github.com/pgillich/mimir-multitenant_alertmanager/internal/logger"
-	"github.com/pgillich/mimir-multitenant_alertmanager/internal/model"
-	"github.com/pgillich/mimir-multitenant_alertmanager/internal/server"
+	int_buildinfo "github.com/pgillich/mimir-multitenant_alertmanager/internal/buildinfo"
+	"github.com/pgillich/mimir-multitenant_alertmanager/pkg/logger"
+	"github.com/pgillich/mimir-multitenant_alertmanager/pkg/model"
+	"github.com/pgillich/mimir-multitenant_alertmanager/pkg/server"
 )
 
 var serverViper = viper.New() //nolint:gochecknoglobals // CMD
@@ -64,7 +65,7 @@ var serverCmd = &cobra.Command{
 			httpServerRunner = server.RunHttpServer
 		}
 
-		err = server.RunServices(cmd.Context(), cmd.Use, args, serverConfig, testConfig)
+		err = server.RunServices(cmd.Context(), int_buildinfo.BuildInfo, args, serverConfig, testConfig)
 		time.Sleep(time.Second)
 
 		return err

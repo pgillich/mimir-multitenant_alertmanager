@@ -8,7 +8,7 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/pgillich/mimir-multitenant_alertmanager/internal/utils"
+	"github.com/pgillich/mimir-multitenant_alertmanager/pkg/utils"
 )
 
 type CaptureTransportMode int

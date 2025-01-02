@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: multitenant-alertmanager-config
+  name: multitenant-alerts-config
 data:
-  multitenant_alertmanager.yaml: |
+  multitenant_alerts.yaml: |
     listenaddr: 0.0.0.0:9093
     tracerurl: http://self-monitoring-alloy.self-monitoring.svc:4318
     alerts:

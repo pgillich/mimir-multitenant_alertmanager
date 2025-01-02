@@ -12,9 +12,10 @@ import (
 	metric_api "go.opentelemetry.io/otel/metric"
 	"go.opentelemetry.io/otel/trace"
 
-	"github.com/pgillich/mimir-multitenant_alertmanager/internal/logger"
-	"github.com/pgillich/mimir-multitenant_alertmanager/internal/middleware"
-	mw_client_model "github.com/pgillich/mimir-multitenant_alertmanager/internal/middleware/client/model"
+	"github.com/pgillich/mimir-multitenant_alertmanager/pkg/logger"
+	"github.com/pgillich/mimir-multitenant_alertmanager/pkg/middleware"
+	mw_client_model "github.com/pgillich/mimir-multitenant_alertmanager/pkg/middleware/client/model"
+	"github.com/pgillich/mimir-multitenant_alertmanager/pkg/model"
 )
 
 // LogTransport implements the http.RoundTripper interface and wraps
@@ -166,6 +167,7 @@ func (t *MetricTransport) RoundTrip(r *http.Request) (*http.Response, error) {
 func DecorateHttpClient(httpClient *http.Client,
 	traceAttributes map[string]string,
 	metricName string, metricDescription string, metricLabels map[string]string,
+	buildinfo model.BuildInfo,
 	log *slog.Logger, logReqLevel slog.Level, logRespLevel slog.Level,
 	captureTransportMode mw_client_model.CaptureTransportMode, captureDir string, captureMatchers []mw_client_model.CaptureMatcher,
 ) *http.Client {
@@ -186,7 +188,7 @@ func DecorateHttpClient(httpClient *http.Client,
 				logReqLevel,
 				logRespLevel,
 			),
-			middleware.GetMeter(log),
+			middleware.GetMeter(buildinfo, log),
 			metricName, metricDescription, metricLabels,
 			middleware.FirstErr,
 		),

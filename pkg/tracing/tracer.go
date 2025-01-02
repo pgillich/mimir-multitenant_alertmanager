@@ -17,8 +17,8 @@ import (
 	semconv "go.opentelemetry.io/otel/semconv/v1.11.0"
 
 	"github.com/pgillich/mimir-multitenant_alertmanager/configs"
-	"github.com/pgillich/mimir-multitenant_alertmanager/internal/buildinfo"
-	"github.com/pgillich/mimir-multitenant_alertmanager/internal/logger"
+	"github.com/pgillich/mimir-multitenant_alertmanager/pkg/logger"
+	"github.com/pgillich/mimir-multitenant_alertmanager/pkg/model"
 )
 
 type ErrorHandler struct {
@@ -53,20 +53,21 @@ const (
 )
 
 var (
-	SpanKeyComponentValue = buildinfo.GetAppName()
+	SpanKeyComponentValue string
 )
 
-func InitTracer(exporter sdktrace.SpanExporter, sampler sdktrace.Sampler, appName string, service string, instance string, command string, log *slog.Logger) *sdktrace.TracerProvider {
+func InitTracer(exporter sdktrace.SpanExporter, sampler sdktrace.Sampler, buildinfo model.BuildInfo, service string, instance string, command string, log *slog.Logger) *sdktrace.TracerProvider {
 	// For the demonstration, use sdktrace.AlwaysSample sampler to sample all traces.
 	// In a production application, use sdktrace.ProbabilitySampler with a desired probability.
 	// semconv keys are defined in https://github.com/open-telemetry/opentelemetry-specification/tree/main/semantic_conventions/trace
 	attrs := []attribute.KeyValue{
-		semconv.ServiceNamespaceKey.String(appName),
+		semconv.ServiceNamespaceKey.String(buildinfo.AppName()),
 		semconv.ServiceNameKey.String(service),
 		semconv.ServiceInstanceIDKey.String(instance),
-		semconv.ServiceVersionKey.String(buildinfo.Version),
+		semconv.ServiceVersionKey.String(buildinfo.Version()),
 		attribute.Int("attrID", os.Getpid()),
 	}
+	SpanKeyComponentValue = buildinfo.AppName()
 	if command != "" {
 		attrs = append(attrs, attribute.String(StateKeyClientCommand, command))
 	}

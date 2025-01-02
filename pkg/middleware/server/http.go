@@ -16,9 +16,9 @@ import (
 	semconv "go.opentelemetry.io/otel/semconv/v1.11.0"
 	"go.opentelemetry.io/otel/trace"
 
-	"github.com/pgillich/mimir-multitenant_alertmanager/internal/logger"
-	"github.com/pgillich/mimir-multitenant_alertmanager/internal/middleware"
-	"github.com/pgillich/mimir-multitenant_alertmanager/internal/tracing"
+	"github.com/pgillich/mimir-multitenant_alertmanager/pkg/logger"
+	"github.com/pgillich/mimir-multitenant_alertmanager/pkg/middleware"
+	"github.com/pgillich/mimir-multitenant_alertmanager/pkg/tracing"
 )
 
 func ChiLoggerBaseMiddleware(rootLog *slog.Logger) func(next http.Handler) http.Handler {

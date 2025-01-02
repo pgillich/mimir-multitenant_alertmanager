@@ -10,8 +10,8 @@ import (
 	"github.com/pgillich/mimir-multitenant_alertmanager/cmd"
 	"github.com/pgillich/mimir-multitenant_alertmanager/configs"
 	_ "github.com/pgillich/mimir-multitenant_alertmanager/internal/alertmanager"
-	"github.com/pgillich/mimir-multitenant_alertmanager/internal/logger"
-	// "github.com/pgillich/mimir-multitenant_alertmanager/internal/tracing"
+	"github.com/pgillich/mimir-multitenant_alertmanager/pkg/logger"
+	// "github.com/pgillich/mimir-multitenant_alertmanager/pkg/tracing"
 )
 
 type TestServer struct {
@@ -36,7 +36,7 @@ func runTestServerCmd(t *testing.T, serverName string, serverConfig configs.Serv
 
 	workDir := t.TempDir()
 
-	serverConfigFile, err := configs.SaveServerConfig(serverConfig, workDir, "multitenant_alertmanager.yaml")
+	serverConfigFile, err := configs.SaveServerConfig(serverConfig, workDir, "multitenant_alerts.yaml")
 	if err != nil {
 		t.Fatalf("SaveServerConfig: %v", err)
 	}

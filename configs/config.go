@@ -4,7 +4,7 @@ import (
 	"log/slog"
 	"net/http"
 
-	mw_client_model "github.com/pgillich/mimir-multitenant_alertmanager/internal/middleware/client/model"
+	mw_client_model "github.com/pgillich/mimir-multitenant_alertmanager/pkg/middleware/client/model"
 )
 
 const (

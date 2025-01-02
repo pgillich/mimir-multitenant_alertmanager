@@ -8,7 +8,7 @@ import (
 )
 
 func SaveServerConfig(serverConfig ServerConfig, dirName string, fileName string) (string, error) {
-	configFile := filepath.Join(dirName, "multitenant_alertmanager.yaml")
+	configFile := filepath.Join(dirName, "multitenant_alerts.yaml")
 	file, err := os.Create(configFile)
 	if err != nil {
 		return "", err

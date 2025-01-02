@@ -19,7 +19,7 @@ DOCKER_OGEN_PATH ?= ghcr.io/ogen-go
 
 OAPI_CODEGEN_VERSION ?= v2.4.1
 
-API_PACKAGE_NAME ?= multitenant-alertmanager
+API_PACKAGE_NAME ?= multitenant-alerts
 APP_NAME ?= ${API_PACKAGE_NAME}
 
 SRC_DIR ?= /build

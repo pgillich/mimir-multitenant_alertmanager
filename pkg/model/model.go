@@ -27,3 +27,10 @@ type HttpServicer interface {
 	// Stop stops the service. Called when the application is shutting down. It should free resources, close connections, etc.
 	Stop(ctx context.Context) error
 }
+
+type BuildInfo interface {
+	Version() string
+	BuildTime() string
+	AppName() string
+	ModulePath() string
+}

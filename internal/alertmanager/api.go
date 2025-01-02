@@ -9,8 +9,8 @@ import (
 	prom_model "github.com/prometheus/common/model"
 
 	"github.com/pgillich/mimir-multitenant_alertmanager/configs"
-	"github.com/pgillich/mimir-multitenant_alertmanager/internal/logger"
-	"github.com/pgillich/mimir-multitenant_alertmanager/pkg/alertmanager/api"
+	api "github.com/pgillich/mimir-multitenant_alertmanager/pkg/api/alertmanager"
+	"github.com/pgillich/mimir-multitenant_alertmanager/pkg/logger"
 )
 
 type ApiServer struct {

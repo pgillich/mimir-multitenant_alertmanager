@@ -32,16 +32,16 @@ import (
 
 	"github.com/pgillich/mimir-multitenant_alertmanager/configs"
 	"github.com/pgillich/mimir-multitenant_alertmanager/internal/buildinfo"
-	"github.com/pgillich/mimir-multitenant_alertmanager/internal/logger"
-	"github.com/pgillich/mimir-multitenant_alertmanager/internal/model"
-	"github.com/pgillich/mimir-multitenant_alertmanager/internal/utils"
+	"github.com/pgillich/mimir-multitenant_alertmanager/pkg/logger"
+	"github.com/pgillich/mimir-multitenant_alertmanager/pkg/model"
+	"github.com/pgillich/mimir-multitenant_alertmanager/pkg/utils"
 )
 
 var cfgFile string //nolint:gochecknoglobals // cobra
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{ //nolint:gochecknoglobals // cobra
-	Use:   buildinfo.GetAppName(),
+	Use:   buildinfo.BuildInfo.AppName(),
 	Short: "A brief description of your application",
 	Long: `A longer description that spans multiple lines and likely contains
 examples and usage of using your application. For example:

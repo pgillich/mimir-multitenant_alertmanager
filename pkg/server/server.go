@@ -15,12 +15,11 @@ import (
 	"go.opentelemetry.io/otel/trace"
 
 	"github.com/pgillich/mimir-multitenant_alertmanager/configs"
-	"github.com/pgillich/mimir-multitenant_alertmanager/internal/buildinfo"
-	"github.com/pgillich/mimir-multitenant_alertmanager/internal/logger"
-	"github.com/pgillich/mimir-multitenant_alertmanager/internal/middleware"
-	mw_server "github.com/pgillich/mimir-multitenant_alertmanager/internal/middleware/server"
-	"github.com/pgillich/mimir-multitenant_alertmanager/internal/model"
-	"github.com/pgillich/mimir-multitenant_alertmanager/internal/tracing"
+	"github.com/pgillich/mimir-multitenant_alertmanager/pkg/logger"
+	"github.com/pgillich/mimir-multitenant_alertmanager/pkg/middleware"
+	mw_server "github.com/pgillich/mimir-multitenant_alertmanager/pkg/middleware/server"
+	"github.com/pgillich/mimir-multitenant_alertmanager/pkg/model"
+	"github.com/pgillich/mimir-multitenant_alertmanager/pkg/tracing"
 )
 
 type ConfigSetter interface {
@@ -61,7 +60,7 @@ func RunHttpServer(h http.Handler, shutdown <-chan struct{}, addr string, log *s
 	}
 }
 
-func RunServices(ctx context.Context, appName string, serviceNames []string,
+func RunServices(ctx context.Context, buildinfo model.BuildInfo, serviceNames []string,
 	serverConfig configs.ServerConfig, testConfig *configs.TestConfig,
 ) error {
 	_, log := logger.FromContext(ctx)
@@ -80,7 +79,7 @@ func RunServices(ctx context.Context, appName string, serviceNames []string,
 
 	for _, service := range services {
 		log.Debug("SERVICE_PREPARE", logger.KeyService, service.Name())
-		deferFn, err := PrepareService(ctx, appName, service, serverConfig, testConfig, mux)
+		deferFn, err := PrepareService(ctx, service, buildinfo, serverConfig, testConfig, mux)
 		defer deferFn()
 		if err != nil {
 			return err
@@ -104,7 +103,7 @@ func RunServices(ctx context.Context, appName string, serviceNames []string,
 	return nil
 }
 
-func PrepareService(ctx context.Context, appName string, service model.HttpServicer,
+func PrepareService(ctx context.Context, service model.HttpServicer, buildinfo model.BuildInfo,
 	serverConfig configs.ServerConfig, testConfig *configs.TestConfig, mux *chi.Mux,
 ) (func(), error) {
 	_, log := logger.FromContext(ctx)
@@ -122,7 +121,7 @@ func PrepareService(ctx context.Context, appName string, service model.HttpServi
 		return deferFn, logger.Wrap(errors.New("unable to get OtlpProvider"), err)
 	}
 	tp := tracing.InitTracer(traceExporter, sdktrace.AlwaysSample(),
-		buildinfo.ModulePath(), service.Name(), hostname, "", log,
+		buildinfo, service.Name(), hostname, "", log,
 	)
 	deferFn = func() {
 		if err := tp.Shutdown(context.Background()); err != nil {
@@ -139,7 +138,7 @@ func PrepareService(ctx context.Context, appName string, service model.HttpServi
 		mw_server.ChiLoggerBaseMiddleware(log.With(logger.KeyService, service.Name())),
 		mw_server.ChiTracerMiddleware(tr, hostname),
 		mw_server.ChiLoggerMiddleware(slog.LevelInfo, slog.LevelInfo),
-		mw_server.ChiMetricMiddleware(middleware.GetMeter(log),
+		mw_server.ChiMetricMiddleware(middleware.GetMeter(buildinfo, log),
 			"http_in", "HTTP in response", map[string]string{
 				logger.KeyService: service.Name(),
 			}, log,

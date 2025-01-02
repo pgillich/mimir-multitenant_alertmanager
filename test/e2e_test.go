@@ -12,10 +12,10 @@ import (
 	"github.com/pgillich/mimir-multitenant_alertmanager/configs"
 	_ "github.com/pgillich/mimir-multitenant_alertmanager/internal/alertmanager"
 	"github.com/pgillich/mimir-multitenant_alertmanager/internal/buildinfo"
-	"github.com/pgillich/mimir-multitenant_alertmanager/internal/logger"
-	mw_client "github.com/pgillich/mimir-multitenant_alertmanager/internal/middleware/client"
-	mw_client_model "github.com/pgillich/mimir-multitenant_alertmanager/internal/middleware/client/model"
-	pkg_api "github.com/pgillich/mimir-multitenant_alertmanager/pkg/alertmanager/api"
+	pkg_api "github.com/pgillich/mimir-multitenant_alertmanager/pkg/api/alertmanager"
+	"github.com/pgillich/mimir-multitenant_alertmanager/pkg/logger"
+	mw_client "github.com/pgillich/mimir-multitenant_alertmanager/pkg/middleware/client"
+	mw_client_model "github.com/pgillich/mimir-multitenant_alertmanager/pkg/middleware/client/model"
 	pkg_utils "github.com/pgillich/mimir-multitenant_alertmanager/pkg/utils"
 	// "github.com/pgillich/mimir-multitenant_alertmanager/internal/tracing"
 )
@@ -29,7 +29,7 @@ func TestE2ETestSuite(t *testing.T) {
 }
 
 func (s *E2ETestSuite) TestAlerts() {
-	log := logger.GetLogger(buildinfo.GetAppName(), slog.LevelDebug).With(logger.KeyTestCase, s.T().Name())
+	log := logger.GetLogger(buildinfo.BuildInfo.AppName(), slog.LevelDebug).With(logger.KeyTestCase, s.T().Name())
 	//tracing.SetErrorHandlerLogger(log)
 	serverConfig := configs.ServerConfig{
 		Alerts: configs.AlertsConfig{
@@ -71,7 +71,7 @@ func (s *E2ETestSuite) TestAlerts() {
 }
 
 func (s *E2ETestSuite) TestAlertGroups() {
-	log := logger.GetLogger(buildinfo.GetAppName(), slog.LevelDebug).With(logger.KeyTestCase, s.T().Name())
+	log := logger.GetLogger(buildinfo.BuildInfo.AppName(), slog.LevelDebug).With(logger.KeyTestCase, s.T().Name())
 	//tracing.SetErrorHandlerLogger(log)
 	serverConfig := configs.ServerConfig{
 		Alerts: configs.AlertsConfig{
@@ -113,7 +113,7 @@ func (s *E2ETestSuite) TestAlertGroups() {
 }
 
 func (s *E2ETestSuite) TestSilences() {
-	log := logger.GetLogger(buildinfo.GetAppName(), slog.LevelDebug).With(logger.KeyTestCase, s.T().Name())
+	log := logger.GetLogger(buildinfo.BuildInfo.AppName(), slog.LevelDebug).With(logger.KeyTestCase, s.T().Name())
 	//tracing.SetErrorHandlerLogger(log)
 	serverConfig := configs.ServerConfig{
 		Alerts: configs.AlertsConfig{
@@ -130,7 +130,7 @@ func (s *E2ETestSuite) TestSilences() {
 		},
 	}
 
-	server := runTestServerCmd(s.T(), "services", serverConfig, testConfig, []string{"alertmanager"}, log)
+	server := runTestServerCmd(s.T(), "services", serverConfig, testConfig, []string{"multitenant-alertmanager"}, log)
 	defer server.cancel()
 
 	testRootUrl, err := url.JoinPath(server.testServer.URL, "/alertmanager/api/v2")

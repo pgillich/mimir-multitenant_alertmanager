@@ -13,4 +13,4 @@ output-options:
 # compatibility:
 #   apply-chi-middleware-first-to-last: true
 # output: pkg/api/alertmanager/gen.go
-output: ../../pkg/alertmanager/api/chi.go
+output: ../../pkg/api/alertmanager/chi.go

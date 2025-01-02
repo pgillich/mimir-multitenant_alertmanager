@@ -11,13 +11,13 @@ import (
 
 	"github.com/pgillich/mimir-multitenant_alertmanager/configs"
 	"github.com/pgillich/mimir-multitenant_alertmanager/internal/buildinfo"
-	"github.com/pgillich/mimir-multitenant_alertmanager/internal/logger"
-	"github.com/pgillich/mimir-multitenant_alertmanager/internal/middleware"
-	mw_client "github.com/pgillich/mimir-multitenant_alertmanager/internal/middleware/client"
-	"github.com/pgillich/mimir-multitenant_alertmanager/internal/model"
-	"github.com/pgillich/mimir-multitenant_alertmanager/internal/server"
-	"github.com/pgillich/mimir-multitenant_alertmanager/internal/tracing"
-	"github.com/pgillich/mimir-multitenant_alertmanager/pkg/alertmanager/api"
+	api "github.com/pgillich/mimir-multitenant_alertmanager/pkg/api/alertmanager"
+	"github.com/pgillich/mimir-multitenant_alertmanager/pkg/logger"
+	"github.com/pgillich/mimir-multitenant_alertmanager/pkg/middleware"
+	mw_client "github.com/pgillich/mimir-multitenant_alertmanager/pkg/middleware/client"
+	"github.com/pgillich/mimir-multitenant_alertmanager/pkg/model"
+	"github.com/pgillich/mimir-multitenant_alertmanager/pkg/server"
+	"github.com/pgillich/mimir-multitenant_alertmanager/pkg/tracing"
 	pkg_utils "github.com/pgillich/mimir-multitenant_alertmanager/pkg/utils"
 )
 
@@ -61,7 +61,7 @@ func (s *HttpService) Prepare(ctx context.Context, serverConfig configs.ServerCo
 	httpClient := mw_client.DecorateHttpClient(pkg_utils.NewHttpClient(),
 		// Trace
 		map[string]string{
-			tracing.SpanKeyComponent: buildinfo.GetAppName(),
+			tracing.SpanKeyComponent: buildinfo.BuildInfo.AppName(),
 			tracing.SpanKeyService:   ServiceName,
 			tracing.SpanKeyInstance:  hostname,
 		},
@@ -71,6 +71,7 @@ func (s *HttpService) Prepare(ctx context.Context, serverConfig configs.ServerCo
 			middleware.MetrAttrService:       ServiceName,
 			middleware.MetrAttrTargetService: TargetServiceName,
 		},
+		buildinfo.BuildInfo,
 		// Log
 		log, slog.LevelInfo, slog.LevelInfo,
 		// Test

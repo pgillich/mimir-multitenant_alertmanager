@@ -10,8 +10,8 @@ import (
 	metric_api "go.opentelemetry.io/otel/metric"
 	"go.opentelemetry.io/otel/sdk/metric"
 
-	"github.com/pgillich/mimir-multitenant_alertmanager/internal/buildinfo"
-	"github.com/pgillich/mimir-multitenant_alertmanager/internal/logger"
+	"github.com/pgillich/mimir-multitenant_alertmanager/pkg/logger"
+	"github.com/pgillich/mimir-multitenant_alertmanager/pkg/model"
 )
 
 func Int64CounterGetInstrument(name string, options ...metric_api.Int64CounterOption) (metric_api.Int64Counter, error) {
@@ -61,7 +61,7 @@ var (
 
 // GetMeter returns the default meter.
 // Inits meter and InstrumentRegs (if needed)
-func GetMeter(log *slog.Logger) metric_api.Meter {
+func GetMeter(buildinfo model.BuildInfo, log *slog.Logger) metric_api.Meter {
 	meterOnce.Do(func() {
 		exporter, err := prometheus.New()
 		if err != nil {
