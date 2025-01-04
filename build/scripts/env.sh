@@ -6,6 +6,4 @@ set -euo pipefail
 
 cd "${SRC_DIR}"
 
-go version
-
-go mod tidy -e
+go env

@@ -39,11 +39,12 @@ func (b *BuildInfoApp) AppName() string {
 }
 
 func (b *BuildInfoApp) ModulePath() string {
-	return modulePath()
+	//return pkg_utils.ModulePath(b.ModulePath)
+	return modulePath(b.ModulePath)
 }
 
-func modulePath() string {
-	value := reflect.ValueOf(modulePath)
+func modulePath(fn any) string {
+	value := reflect.ValueOf(fn)
 	ptr := value.Pointer()
 	ffp := runtime.FuncForPC(ptr)
 	modulePath := path.Dir(path.Dir(ffp.Name()))

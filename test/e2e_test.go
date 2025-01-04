@@ -9,14 +9,16 @@ import (
 	yaml "github.com/goccy/go-yaml"
 	"github.com/stretchr/testify/suite"
 
+	"github.com/pgillich/micro-server/pkg/logger"
+	mw_client "github.com/pgillich/micro-server/pkg/middleware/client"
+	mw_client_model "github.com/pgillich/micro-server/pkg/middleware/client/model"
+	pkg_testutil "github.com/pgillich/micro-server/pkg/testutil"
+	pkg_utils "github.com/pgillich/micro-server/pkg/utils"
+	pkg_api "github.com/pgillich/mimir-multitenant_alertmanager/pkg/api/alertmanager"
+
 	"github.com/pgillich/mimir-multitenant_alertmanager/configs"
 	_ "github.com/pgillich/mimir-multitenant_alertmanager/internal/alertmanager"
 	"github.com/pgillich/mimir-multitenant_alertmanager/internal/buildinfo"
-	pkg_api "github.com/pgillich/mimir-multitenant_alertmanager/pkg/api/alertmanager"
-	"github.com/pgillich/mimir-multitenant_alertmanager/pkg/logger"
-	mw_client "github.com/pgillich/mimir-multitenant_alertmanager/pkg/middleware/client"
-	mw_client_model "github.com/pgillich/mimir-multitenant_alertmanager/pkg/middleware/client/model"
-	pkg_utils "github.com/pgillich/mimir-multitenant_alertmanager/pkg/utils"
 	// "github.com/pgillich/mimir-multitenant_alertmanager/internal/tracing"
 )
 
@@ -31,14 +33,14 @@ func TestE2ETestSuite(t *testing.T) {
 func (s *E2ETestSuite) TestAlerts() {
 	log := logger.GetLogger(buildinfo.BuildInfo.AppName(), slog.LevelDebug).With(logger.KeyTestCase, s.T().Name())
 	//tracing.SetErrorHandlerLogger(log)
-	serverConfig := configs.ServerConfig{
+	serverConfig := &configs.ServerConfig{
 		Alerts: configs.AlertsConfig{
 			AlertmanagerUrl: "http://localhost:8085/alertmanager/api/v2",
 			Tenants:         []string{"devops", "app-development"},
 			TenantLabel:     "tenant",
 		},
 	}
-	testConfig := configs.TestConfig{
+	testConfig := &configs.TestConfig{
 		CaptureTransportMode: mw_client_model.CaptureTransportModeFake,
 		CaptureDir:           "../testdata/capture",
 		CaptureMatchers: []mw_client_model.CaptureMatcher{
@@ -46,10 +48,10 @@ func (s *E2ETestSuite) TestAlerts() {
 		},
 	}
 
-	server := runTestServerCmd(s.T(), "services", serverConfig, testConfig, []string{"multitenant-alertmanager"}, log)
-	defer server.cancel()
+	server := pkg_testutil.RunTestServerCmd(s.T(), "services", serverConfig, testConfig, []string{"multitenant-alertmanager"}, log)
+	defer server.Cancel()
 
-	testRootUrl, err := url.JoinPath(server.testServer.URL, "/multitenant-alertmanager/api/v2")
+	testRootUrl, err := url.JoinPath(server.TestServer.URL, "/multitenant-alertmanager/api/v2")
 	s.NoError(err, "testRootUrl")
 	mimirClient, err := pkg_api.NewClientWithResponses(
 		testRootUrl,
@@ -73,14 +75,14 @@ func (s *E2ETestSuite) TestAlerts() {
 func (s *E2ETestSuite) TestAlertGroups() {
 	log := logger.GetLogger(buildinfo.BuildInfo.AppName(), slog.LevelDebug).With(logger.KeyTestCase, s.T().Name())
 	//tracing.SetErrorHandlerLogger(log)
-	serverConfig := configs.ServerConfig{
+	serverConfig := &configs.ServerConfig{
 		Alerts: configs.AlertsConfig{
 			AlertmanagerUrl: "http://localhost:8085/alertmanager/api/v2",
 			Tenants:         []string{"devops", "app-development"},
 			TenantLabel:     "tenant",
 		},
 	}
-	testConfig := configs.TestConfig{
+	testConfig := &configs.TestConfig{
 		CaptureTransportMode: mw_client_model.CaptureTransportModeFake,
 		CaptureDir:           "../testdata/capture",
 		CaptureMatchers: []mw_client_model.CaptureMatcher{
@@ -88,10 +90,10 @@ func (s *E2ETestSuite) TestAlertGroups() {
 		},
 	}
 
-	server := runTestServerCmd(s.T(), "services", serverConfig, testConfig, []string{"multitenant-alertmanager"}, log)
-	defer server.cancel()
+	server := pkg_testutil.RunTestServerCmd(s.T(), "services", serverConfig, testConfig, []string{"multitenant-alertmanager"}, log)
+	defer server.Cancel()
 
-	testRootUrl, err := url.JoinPath(server.testServer.URL, "/multitenant-alertmanager/api/v2")
+	testRootUrl, err := url.JoinPath(server.TestServer.URL, "/multitenant-alertmanager/api/v2")
 	s.NoError(err, "testRootUrl")
 	mimirClient, err := pkg_api.NewClientWithResponses(
 		testRootUrl,
@@ -115,14 +117,14 @@ func (s *E2ETestSuite) TestAlertGroups() {
 func (s *E2ETestSuite) TestSilences() {
 	log := logger.GetLogger(buildinfo.BuildInfo.AppName(), slog.LevelDebug).With(logger.KeyTestCase, s.T().Name())
 	//tracing.SetErrorHandlerLogger(log)
-	serverConfig := configs.ServerConfig{
+	serverConfig := &configs.ServerConfig{
 		Alerts: configs.AlertsConfig{
 			AlertmanagerUrl: "http://localhost:8085/alertmanager/api/v2",
 			Tenants:         []string{"devops", "app-development"},
 			TenantLabel:     "tenant",
 		},
 	}
-	testConfig := configs.TestConfig{
+	testConfig := &configs.TestConfig{
 		CaptureTransportMode: mw_client_model.CaptureTransportModeFake,
 		CaptureDir:           "../testdata/capture",
 		CaptureMatchers: []mw_client_model.CaptureMatcher{
@@ -130,10 +132,10 @@ func (s *E2ETestSuite) TestSilences() {
 		},
 	}
 
-	server := runTestServerCmd(s.T(), "services", serverConfig, testConfig, []string{"multitenant-alertmanager"}, log)
-	defer server.cancel()
+	server := pkg_testutil.RunTestServerCmd(s.T(), "services", serverConfig, testConfig, []string{"multitenant-alertmanager"}, log)
+	defer server.Cancel()
 
-	testRootUrl, err := url.JoinPath(server.testServer.URL, "/alertmanager/api/v2")
+	testRootUrl, err := url.JoinPath(server.TestServer.URL, "/alertmanager/api/v2")
 	s.NoError(err, "testRootUrl")
 	mimirClient, err := pkg_api.NewClientWithResponses(
 		testRootUrl,

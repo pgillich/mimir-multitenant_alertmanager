@@ -7,7 +7,8 @@ set -euo pipefail
 cd "${SRC_DIR}"
 mkdir -p "${TEST_COVERAGE_DIR}"
 
-LIST_OF_FILES=$(go list ./... | grep -Ev "${GO_TEST_EXCLUDES}")
+LIST_OF_FILES=$(go list ./internal/... ./pkg/... ./test/... | grep -Ev "${GO_TEST_EXCLUDES}")
+echo $LIST_OF_FILES
 
 go version
 # shellcheck disable=SC2086

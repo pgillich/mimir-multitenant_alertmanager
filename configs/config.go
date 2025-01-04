@@ -1,10 +1,9 @@
 package configs
 
 import (
-	"log/slog"
-	"net/http"
+	pkg_configs "github.com/pgillich/micro-server/pkg/configs"
 
-	mw_client_model "github.com/pgillich/mimir-multitenant_alertmanager/pkg/middleware/client/model"
+	mw_client_model "github.com/pgillich/micro-server/pkg/middleware/client/model"
 )
 
 const (
@@ -18,6 +17,14 @@ type ServerConfig struct {
 	Alerts     AlertsConfig
 }
 
+func (c *ServerConfig) GetListenAddr() string {
+	return c.ListenAddr
+}
+
+func (c *ServerConfig) GetTracerUrl() string {
+	return c.TracerUrl
+}
+
 type AlertsConfig struct {
 	AlertmanagerUrl string
 	Tenants         []string
@@ -28,7 +35,13 @@ type TestConfig struct {
 	CaptureTransportMode mw_client_model.CaptureTransportMode
 	CaptureDir           string
 	CaptureMatchers      []mw_client_model.CaptureMatcher
-	HttpServerRunner     HttpServerRunner
+	HttpServerRunner     pkg_configs.HttpServerRunner
 }
 
-type HttpServerRunner func(h http.Handler, shutdown <-chan struct{}, addr string, l *slog.Logger)
+func (c *TestConfig) GetHttpServerRunner() pkg_configs.HttpServerRunner {
+	return c.HttpServerRunner
+}
+
+func (c *TestConfig) SetHttpServerRunner(httpServerRunner pkg_configs.HttpServerRunner) {
+	c.HttpServerRunner = httpServerRunner
+}

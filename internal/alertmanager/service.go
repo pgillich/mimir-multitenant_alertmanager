@@ -9,16 +9,18 @@ import (
 
 	"github.com/go-chi/chi/v5"
 
+	pkg_configs "github.com/pgillich/micro-server/pkg/configs"
+	"github.com/pgillich/micro-server/pkg/logger"
+	"github.com/pgillich/micro-server/pkg/middleware"
+	mw_client "github.com/pgillich/micro-server/pkg/middleware/client"
+	"github.com/pgillich/micro-server/pkg/model"
+	"github.com/pgillich/micro-server/pkg/server"
+	"github.com/pgillich/micro-server/pkg/tracing"
+	pkg_utils "github.com/pgillich/micro-server/pkg/utils"
+
 	"github.com/pgillich/mimir-multitenant_alertmanager/configs"
 	"github.com/pgillich/mimir-multitenant_alertmanager/internal/buildinfo"
 	api "github.com/pgillich/mimir-multitenant_alertmanager/pkg/api/alertmanager"
-	"github.com/pgillich/mimir-multitenant_alertmanager/pkg/logger"
-	"github.com/pgillich/mimir-multitenant_alertmanager/pkg/middleware"
-	mw_client "github.com/pgillich/mimir-multitenant_alertmanager/pkg/middleware/client"
-	"github.com/pgillich/mimir-multitenant_alertmanager/pkg/model"
-	"github.com/pgillich/mimir-multitenant_alertmanager/pkg/server"
-	"github.com/pgillich/mimir-multitenant_alertmanager/pkg/tracing"
-	pkg_utils "github.com/pgillich/mimir-multitenant_alertmanager/pkg/utils"
 )
 
 const (
@@ -31,7 +33,7 @@ var (
 )
 
 type HttpService struct {
-	serverConfig configs.ServerConfig
+	serverConfig *configs.ServerConfig
 	testConfig   *configs.TestConfig
 	apiServer    *ApiServer
 	mimirClient  *api.ClientWithResponses
@@ -49,15 +51,22 @@ func (s *HttpService) Name() string {
 	return ServiceName
 }
 
-func (s *HttpService) Prepare(ctx context.Context, serverConfig configs.ServerConfig, testConfig *configs.TestConfig,
+func (s *HttpService) Prepare(ctx context.Context, serverConfig pkg_configs.ServerConfiger, testConfig pkg_configs.TestConfiger,
 	httpRouter chi.Router,
 ) error {
 	_, log := logger.FromContext(ctx)
 	hostname, _ := os.Hostname() //nolint:errcheck // not important
 
-	s.serverConfig = serverConfig
+	var is bool
+	s.serverConfig, is = serverConfig.(*configs.ServerConfig)
+	if !is {
+		return pkg_configs.ErrFatalServerConfig
+	}
 	s.apiServer = &ApiServer{service: s}
-	s.testConfig = testConfig
+	s.testConfig, is = testConfig.(*configs.TestConfig)
+	if !is {
+		return pkg_configs.ErrFatalServerConfig
+	}
 	httpClient := mw_client.DecorateHttpClient(pkg_utils.NewHttpClient(),
 		// Trace
 		map[string]string{
@@ -75,7 +84,7 @@ func (s *HttpService) Prepare(ctx context.Context, serverConfig configs.ServerCo
 		// Log
 		log, slog.LevelInfo, slog.LevelInfo,
 		// Test
-		testConfig.CaptureTransportMode, testConfig.CaptureDir, testConfig.CaptureMatchers,
+		s.testConfig.CaptureTransportMode, s.testConfig.CaptureDir, s.testConfig.CaptureMatchers,
 	)
 
 	var err error
