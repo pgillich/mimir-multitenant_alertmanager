@@ -1,9 +1,7 @@
 package buildinfo
 
 import (
-	"path"
-	"reflect"
-	"runtime"
+	srv_utils "github.com/pgillich/micro-server/pkg/utils"
 )
 
 // Version is set by the linker.
@@ -39,17 +37,17 @@ func (b *BuildInfoApp) AppName() string {
 }
 
 func (b *BuildInfoApp) ModulePath() string {
-	//return pkg_utils.ModulePath(b.ModulePath)
-	return modulePath(b.ModulePath)
+	return srv_utils.ModulePath(b.ModulePath)
+	//return modulePath(b.ModulePath)
 }
 
-func modulePath(fn any) string {
-	value := reflect.ValueOf(fn)
-	ptr := value.Pointer()
-	ffp := runtime.FuncForPC(ptr)
-	modulePath := path.Dir(path.Dir(ffp.Name()))
+// func modulePath(fn any) string {
+// 	value := reflect.ValueOf(fn)
+// 	ptr := value.Pointer()
+// 	ffp := runtime.FuncForPC(ptr)
+// 	modulePath := path.Dir(path.Dir(ffp.Name()))
 
-	return modulePath
-}
+// 	return modulePath
+// }
 
 var BuildInfo = &BuildInfoApp{}

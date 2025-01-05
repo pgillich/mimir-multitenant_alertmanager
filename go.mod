@@ -9,7 +9,7 @@ require (
 	github.com/goccy/go-yaml v1.15.13
 	github.com/oapi-codegen/oapi-codegen/v2 v2.4.1
 	github.com/oapi-codegen/runtime v1.1.1
-	github.com/pgillich/micro-server v0.0.3
+	github.com/pgillich/micro-server v0.0.4
 	github.com/stretchr/testify v1.10.0
 )
 

@@ -12,9 +12,9 @@ import (
 	"github.com/pgillich/micro-server/pkg/logger"
 	mw_client "github.com/pgillich/micro-server/pkg/middleware/client"
 	mw_client_model "github.com/pgillich/micro-server/pkg/middleware/client/model"
-	pkg_testutil "github.com/pgillich/micro-server/pkg/testutil"
-	pkg_utils "github.com/pgillich/micro-server/pkg/utils"
-	pkg_api "github.com/pgillich/mimir-multitenant_alertmanager/pkg/api/alertmanager"
+	srv_testutil "github.com/pgillich/micro-server/pkg/testutil"
+	srv_utils "github.com/pgillich/micro-server/pkg/utils"
+	srv_api "github.com/pgillich/mimir-multitenant_alertmanager/pkg/api/alertmanager"
 
 	"github.com/pgillich/mimir-multitenant_alertmanager/configs"
 	_ "github.com/pgillich/mimir-multitenant_alertmanager/internal/alertmanager"
@@ -48,19 +48,20 @@ func (s *E2ETestSuite) TestAlerts() {
 		},
 	}
 
-	server := pkg_testutil.RunTestServerCmd(s.T(), "services", serverConfig, testConfig, []string{"multitenant-alertmanager"}, log)
+	server := srv_testutil.RunTestServerCmd(s.T(), "services",
+		buildinfo.BuildInfo, serverConfig, testConfig, []string{"multitenant-alertmanager"}, log)
 	defer server.Cancel()
 
 	testRootUrl, err := url.JoinPath(server.TestServer.URL, "/multitenant-alertmanager/api/v2")
 	s.NoError(err, "testRootUrl")
-	mimirClient, err := pkg_api.NewClientWithResponses(
+	mimirClient, err := srv_api.NewClientWithResponses(
 		testRootUrl,
-		pkg_api.WithHTTPClient(pkg_utils.NewHttpClient()),
+		srv_api.WithHTTPClient(srv_utils.NewHttpClient()),
 	)
-	s.NoError(err, "pkg_api.NewClientWithResponses")
+	s.NoError(err, "srv_api.NewClientWithResponses")
 
 	clientCtx := logger.NewContext(context.Background(), log)
-	clientResp, err := mimirClient.GetAlertsWithResponse(clientCtx, &pkg_api.GetAlertsParams{})
+	clientResp, err := mimirClient.GetAlertsWithResponse(clientCtx, &srv_api.GetAlertsParams{})
 	s.NoError(err, "GetAlertsWithResponse")
 
 	bodyYaml, err := yaml.Marshal(clientResp.JSON200)
@@ -90,19 +91,20 @@ func (s *E2ETestSuite) TestAlertGroups() {
 		},
 	}
 
-	server := pkg_testutil.RunTestServerCmd(s.T(), "services", serverConfig, testConfig, []string{"multitenant-alertmanager"}, log)
+	server := srv_testutil.RunTestServerCmd(s.T(), "services",
+		buildinfo.BuildInfo, serverConfig, testConfig, []string{"multitenant-alertmanager"}, log)
 	defer server.Cancel()
 
 	testRootUrl, err := url.JoinPath(server.TestServer.URL, "/multitenant-alertmanager/api/v2")
 	s.NoError(err, "testRootUrl")
-	mimirClient, err := pkg_api.NewClientWithResponses(
+	mimirClient, err := srv_api.NewClientWithResponses(
 		testRootUrl,
-		pkg_api.WithHTTPClient(pkg_utils.NewHttpClient()),
+		srv_api.WithHTTPClient(srv_utils.NewHttpClient()),
 	)
-	s.NoError(err, "pkg_api.NewClientWithResponses")
+	s.NoError(err, "srv_api.NewClientWithResponses")
 
 	clientCtx := logger.NewContext(context.Background(), log)
-	clientResp, err := mimirClient.GetAlertGroupsWithResponse(clientCtx, &pkg_api.GetAlertGroupsParams{})
+	clientResp, err := mimirClient.GetAlertGroupsWithResponse(clientCtx, &srv_api.GetAlertGroupsParams{})
 	s.NoError(err, "GetAlertGroupsWithResponse")
 
 	bodyYaml, err := yaml.Marshal(clientResp.JSON200)
@@ -132,19 +134,20 @@ func (s *E2ETestSuite) TestSilences() {
 		},
 	}
 
-	server := pkg_testutil.RunTestServerCmd(s.T(), "services", serverConfig, testConfig, []string{"multitenant-alertmanager"}, log)
+	server := srv_testutil.RunTestServerCmd(s.T(), "services",
+		buildinfo.BuildInfo, serverConfig, testConfig, []string{"multitenant-alertmanager"}, log)
 	defer server.Cancel()
 
 	testRootUrl, err := url.JoinPath(server.TestServer.URL, "/alertmanager/api/v2")
 	s.NoError(err, "testRootUrl")
-	mimirClient, err := pkg_api.NewClientWithResponses(
+	mimirClient, err := srv_api.NewClientWithResponses(
 		testRootUrl,
-		pkg_api.WithHTTPClient(pkg_utils.NewHttpClient()),
+		srv_api.WithHTTPClient(srv_utils.NewHttpClient()),
 	)
-	s.NoError(err, "pkg_api.NewClientWithResponses")
+	s.NoError(err, "srv_api.NewClientWithResponses")
 
 	clientCtx := logger.NewContext(context.Background(), log)
-	clientResp, err := mimirClient.GetSilencesWithResponse(clientCtx, &pkg_api.GetSilencesParams{})
+	clientResp, err := mimirClient.GetSilencesWithResponse(clientCtx, &srv_api.GetSilencesParams{})
 	s.NoError(err, "GetSilencesWithResponse")
 
 	bodyYaml, err := yaml.Marshal(clientResp.JSON200)

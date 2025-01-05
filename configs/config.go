@@ -1,7 +1,7 @@
 package configs
 
 import (
-	pkg_configs "github.com/pgillich/micro-server/pkg/configs"
+	srv_configs "github.com/pgillich/micro-server/pkg/configs"
 
 	mw_client_model "github.com/pgillich/micro-server/pkg/middleware/client/model"
 )
@@ -35,13 +35,25 @@ type TestConfig struct {
 	CaptureTransportMode mw_client_model.CaptureTransportMode
 	CaptureDir           string
 	CaptureMatchers      []mw_client_model.CaptureMatcher
-	HttpServerRunner     pkg_configs.HttpServerRunner
+	HttpServerRunner     srv_configs.HttpServerRunner
 }
 
-func (c *TestConfig) GetHttpServerRunner() pkg_configs.HttpServerRunner {
+func (c *TestConfig) GetCaptureTransportMode() mw_client_model.CaptureTransportMode {
+	return c.CaptureTransportMode
+}
+
+func (c *TestConfig) GetCaptureDir() string {
+	return c.CaptureDir
+}
+
+func (c *TestConfig) GetCaptureMatchers() []mw_client_model.CaptureMatcher {
+	return c.CaptureMatchers
+}
+
+func (c *TestConfig) GetHttpServerRunner() srv_configs.HttpServerRunner {
 	return c.HttpServerRunner
 }
 
-func (c *TestConfig) SetHttpServerRunner(httpServerRunner pkg_configs.HttpServerRunner) {
+func (c *TestConfig) SetHttpServerRunner(httpServerRunner srv_configs.HttpServerRunner) {
 	c.HttpServerRunner = httpServerRunner
 }

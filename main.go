@@ -39,6 +39,6 @@ import (
 func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	ctx = logger.NewContext(ctx, logger.GetLogger(buildinfo.BuildInfo.AppName(), slog.LevelDebug))
-	cmd.Execute(ctx, os.Args[1:], &configs.ServerConfig{}, &configs.TestConfig{})
+	cmd.Execute(ctx, os.Args[1:], buildinfo.BuildInfo, &configs.ServerConfig{}, &configs.TestConfig{})
 	cancel()
 }

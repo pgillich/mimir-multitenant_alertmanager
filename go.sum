@@ -127,10 +127,8 @@ github.com/pelletier/go-toml/v2 v2.2.2 h1:aYUidT7k73Pcl9nb2gScu7NSrKCSHIDE89b3+6
 github.com/pelletier/go-toml/v2 v2.2.2/go.mod h1:1t835xjRzz80PqgE6HHgN2JOsmgYu/h4qDAS4n929Rs=
 github.com/perimeterx/marshmallow v1.1.5 h1:a2LALqQ1BlHM8PZblsDdidgv1mWi1DgC2UmX50IvK2s=
 github.com/perimeterx/marshmallow v1.1.5/go.mod h1:dsXbUu8CRzfYP5a87xpp0xq9S3u0Vchtcl8we9tYaXw=
-github.com/pgillich/micro-server v0.0.2 h1:eHFLcuGsaGrjYN7Dtthp5ZxvlYqXUVrucc5TAYUsgIk=
-github.com/pgillich/micro-server v0.0.2/go.mod h1:V60yOvaDmnGZdU9EV8kAhOhAmgFWHNogXabJGthN8Dk=
-github.com/pgillich/micro-server v0.0.3 h1:blXdNVDf21HQy6+IlyMBPFRSPyhbpSA2Pzr0jQ9ipO0=
-github.com/pgillich/micro-server v0.0.3/go.mod h1:V60yOvaDmnGZdU9EV8kAhOhAmgFWHNogXabJGthN8Dk=
+github.com/pgillich/micro-server v0.0.4 h1:UJo+yT7bg8HTlKOHyzhEnn1QZbOu/o8N6/Ybp4Ubl8Y=
+github.com/pgillich/micro-server v0.0.4/go.mod h1:V60yOvaDmnGZdU9EV8kAhOhAmgFWHNogXabJGthN8Dk=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 h1:Jamvg5psRIccs7FGNTlIRMkT8wgtp5eCXdBlqhYGL6U=
 github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=

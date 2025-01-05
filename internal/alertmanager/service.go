@@ -9,14 +9,11 @@ import (
 
 	"github.com/go-chi/chi/v5"
 
-	pkg_configs "github.com/pgillich/micro-server/pkg/configs"
+	srv_configs "github.com/pgillich/micro-server/pkg/configs"
 	"github.com/pgillich/micro-server/pkg/logger"
-	"github.com/pgillich/micro-server/pkg/middleware"
 	mw_client "github.com/pgillich/micro-server/pkg/middleware/client"
 	"github.com/pgillich/micro-server/pkg/model"
 	"github.com/pgillich/micro-server/pkg/server"
-	"github.com/pgillich/micro-server/pkg/tracing"
-	pkg_utils "github.com/pgillich/micro-server/pkg/utils"
 
 	"github.com/pgillich/mimir-multitenant_alertmanager/configs"
 	"github.com/pgillich/mimir-multitenant_alertmanager/internal/buildinfo"
@@ -51,7 +48,7 @@ func (s *HttpService) Name() string {
 	return ServiceName
 }
 
-func (s *HttpService) Prepare(ctx context.Context, serverConfig pkg_configs.ServerConfiger, testConfig pkg_configs.TestConfiger,
+func (s *HttpService) Prepare(ctx context.Context, serverConfig srv_configs.ServerConfiger, testConfig srv_configs.TestConfiger,
 	httpRouter chi.Router,
 ) error {
 	_, log := logger.FromContext(ctx)
@@ -60,32 +57,15 @@ func (s *HttpService) Prepare(ctx context.Context, serverConfig pkg_configs.Serv
 	var is bool
 	s.serverConfig, is = serverConfig.(*configs.ServerConfig)
 	if !is {
-		return pkg_configs.ErrFatalServerConfig
+		return srv_configs.ErrFatalServerConfig
 	}
 	s.apiServer = &ApiServer{service: s}
 	s.testConfig, is = testConfig.(*configs.TestConfig)
 	if !is {
-		return pkg_configs.ErrFatalServerConfig
+		return srv_configs.ErrFatalServerConfig
 	}
-	httpClient := mw_client.DecorateHttpClient(pkg_utils.NewHttpClient(),
-		// Trace
-		map[string]string{
-			tracing.SpanKeyComponent: buildinfo.BuildInfo.AppName(),
-			tracing.SpanKeyService:   ServiceName,
-			tracing.SpanKeyInstance:  hostname,
-		},
-		// Metrics
-		middleware.MetrHttpOut, middleware.MetrHttpOutDescr,
-		map[string]string{
-			middleware.MetrAttrService:       ServiceName,
-			middleware.MetrAttrTargetService: TargetServiceName,
-		},
-		buildinfo.BuildInfo,
-		// Log
-		log, slog.LevelInfo, slog.LevelInfo,
-		// Test
-		s.testConfig.CaptureTransportMode, s.testConfig.CaptureDir, s.testConfig.CaptureMatchers,
-	)
+	httpClient := mw_client.NewHttpClient(hostname, ServiceName, TargetServiceName,
+		buildinfo.BuildInfo, s.testConfig, log, slog.LevelInfo, slog.LevelInfo)
 
 	var err error
 	s.mimirClient, err = api.NewClientWithResponses(
