@@ -22,19 +22,19 @@ import (
 	// "github.com/pgillich/mimir-multitenant_alertmanager/internal/tracing"
 )
 
-type E2ETestSuite struct {
+type AlertmanagerSuite struct {
 	suite.Suite
 }
 
-func TestE2ETestSuite(t *testing.T) {
-	suite.Run(t, new(E2ETestSuite))
+func TestAlertmanagerSuite(t *testing.T) {
+	suite.Run(t, new(AlertmanagerSuite))
 }
 
-func (s *E2ETestSuite) TestAlerts() {
+func (s *AlertmanagerSuite) TestAlerts() {
 	log := logger.GetLogger(buildinfo.BuildInfo.AppName(), slog.LevelDebug).With(logger.KeyTestCase, s.T().Name())
 	//tracing.SetErrorHandlerLogger(log)
 	serverConfig := &configs.ServerConfig{
-		Alerts: configs.AlertsConfig{
+		Alerts: &configs.AlertsConfig{
 			AlertmanagerUrl: "http://localhost:8085/alertmanager/api/v2",
 			Tenants:         []string{"devops", "app-development"},
 			TenantLabel:     "tenant",
@@ -73,11 +73,11 @@ func (s *E2ETestSuite) TestAlerts() {
 	//time.Sleep(1000 * time.Second)
 }
 
-func (s *E2ETestSuite) TestAlertGroups() {
+func (s *AlertmanagerSuite) TestAlertGroups() {
 	log := logger.GetLogger(buildinfo.BuildInfo.AppName(), slog.LevelDebug).With(logger.KeyTestCase, s.T().Name())
 	//tracing.SetErrorHandlerLogger(log)
 	serverConfig := &configs.ServerConfig{
-		Alerts: configs.AlertsConfig{
+		Alerts: &configs.AlertsConfig{
 			AlertmanagerUrl: "http://localhost:8085/alertmanager/api/v2",
 			Tenants:         []string{"devops", "app-development"},
 			TenantLabel:     "tenant",
@@ -116,11 +116,11 @@ func (s *E2ETestSuite) TestAlertGroups() {
 	//time.Sleep(1000 * time.Second)
 }
 
-func (s *E2ETestSuite) TestSilences() {
+func (s *AlertmanagerSuite) TestSilences() {
 	log := logger.GetLogger(buildinfo.BuildInfo.AppName(), slog.LevelDebug).With(logger.KeyTestCase, s.T().Name())
 	//tracing.SetErrorHandlerLogger(log)
 	serverConfig := &configs.ServerConfig{
-		Alerts: configs.AlertsConfig{
+		Alerts: &configs.AlertsConfig{
 			AlertmanagerUrl: "http://localhost:8085/alertmanager/api/v2",
 			Tenants:         []string{"devops", "app-development"},
 			TenantLabel:     "tenant",

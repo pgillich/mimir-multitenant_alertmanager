@@ -8,8 +8,6 @@ generate:
 output-options:
   include-operation-ids:
   - getAlerts
-  - getSilences
-  - getAlertGroups
 # compatibility:
 #   apply-chi-middleware-first-to-last: true
-output: ../../pkg/api/alertmanager/chi.go
+output: ../../pkg/api/notifyer/chi.go

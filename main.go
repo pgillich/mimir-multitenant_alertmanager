@@ -34,6 +34,7 @@ import (
 
 	// force to run init() functions
 	_ "github.com/pgillich/mimir-multitenant_alertmanager/internal/alertmanager"
+	_ "github.com/pgillich/mimir-multitenant_alertmanager/internal/notifyer"
 )
 
 func main() {

@@ -94,7 +94,7 @@ response:
           "summary": "ArgoCD service policy-bundle (namespace kyverno) not synced on cluster ",
           "value": "1"
         },
-        "endsAt": "2024-12-13T10:21:12.660Z",
+        "endsAt": "2034-12-13T10:21:12.660Z",
         "fingerprint": "9cec92cd0b77b01f",
         "receivers": [
           {
@@ -187,7 +187,7 @@ response:
     [
       {
         "annotations": {},
-        "endsAt": "2024-12-13T10:39:40.785Z",
+        "endsAt": "2034-12-13T10:39:40.785Z",
         "fingerprint": "3b1f00be786a41f",
         "receivers": [
           {

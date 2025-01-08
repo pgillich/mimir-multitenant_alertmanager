@@ -1,0 +1,116 @@
+{{/* Prometheus Alertmanager supports below fields, see https://github.com/prometheus/alertmanager/blob/main/template/template.go#L360 :
+		Receiver:          regexp.QuoteMeta(recv),
+		Status:            string(types.Alerts(alerts...).Status()),
+		Alerts:            make(Alerts, 0, len(alerts)),
+		GroupLabels:       KV{},
+		CommonLabels:      KV{},
+		CommonAnnotations: KV{},
+		ExternalURL:       t.ExternalURL.String(),
+
+Mimir Alertmanager supports more fields, see https://github.com/grafana/alerting/blob/main/receivers/email/email.go#L77 :
+			"Title":             subject,
+			"Message":           tmpl(en.settings.Message),
+			"Status":            data.Status,
+			"Alerts":            data.Alerts,
+			"GroupLabels":       data.GroupLabels,
+			"CommonLabels":      data.CommonLabels,
+			"CommonAnnotations": data.CommonAnnotations,
+			"ExternalURL":       data.ExternalURL,
+			"RuleUrl":           ruleURL,
+			"AlertPageUrl":      alertPageURL,
+, wich extends the data, coming from Prometheus Alertmanager.
+
+More Mimir fields are defined at https://github.com/grafana/alerting/blob/main/receivers/email_sender.go#L130 :
+	data["AppUrl"] = s.cfg.ExternalURL
+	data["Subject"] = map[string]any{}
+	data["SentBy"] = s.cfg.SentBy
+	dataCopy := map[string]any{}
+	for k, v := range data {
+		dataCopy[k] = v
+	}
+	data["TemplateData"] = dataCopy
+https://github.com/grafana/alerting/blob/main/receivers/email_sender.go#L22
+	AuthPassword   string
+	AuthUser       string
+	CertFile       string
+	ContentTypes   []string
+	EhloIdentity   string
+	ExternalURL    string
+	FromName       string
+	FromAddress    string
+	Host           string
+	KeyFile        string
+	SkipVerify     bool
+	StartTLSPolicy string
+	StaticHeaders  map[string]string
+	SentBy         string
+*/}}
+{{- define "__default_message" -}}
+You have {{ len .Alerts.Firing }} firing alert(s), and {{ len .Alerts.Resolved }} resolved alert(s) for {{ .GroupLabels }}
+
+{{ if .Alerts.Firing -}}
+({{ len .Alerts.Firing }}) FIRING
+-----------
+{{ template "__default_alerts_summarize" .Alerts.Firing }}
+{{- end }}
+
+{{- if .Alerts.Resolved }}
+({{ len .Alerts.Resolved }}) RESOLVED
+-------------
+{{ template "__default_alerts_summarize" .Alerts.Resolved }}
+{{- end }}
+Go to the Alerts page: NOT_SUPPORTED_BY_PROMETHEUS {{/* .AlertPageUrl */}}
+{{- end -}}
+
+{{- define "__default_alerts_summarize" -}}
+{{- range . }}
+{{- template "__default_alert_labels" . }}
+{{- template "__default_alert_annotations" . }}
+{{ end }}
+{{- end -}}
+
+{{- define "__default_alert_labels" -}}
+{{- $labels := .Labels -}}
+{{- if index $labels "alertname" }}
+Alertname: {{ index .Labels "alertname" -}}
+{{ $labels = $labels.Remove (toStrings (list "alertname")) }}
+{{- end }}
+Labels: {{ template "__default_sorted_pairs" $labels }}
+{{- end -}}
+
+{{- define "__default_alert_annotations" -}}
+{{- $annotations := .Annotations -}}
+{{- if index $annotations "summary" }}
+Summary: {{ index .Annotations "summary" -}}
+{{- $annotations = $annotations.Remove (toStrings (list "summary")) }}
+{{- end -}}
+{{- if index $annotations "description" }}
+Description: {{ index $annotations "description" -}}
+{{- $annotations = $annotations.Remove (toStrings (list "description")) }}
+{{- end -}}
+{{- if index $annotations "runbook_url" }}
+Runbook: {{ index $annotations "runbook_url" -}}
+{{- $annotations = $annotations.Remove (toStrings (list "runbook_url")) }}
+{{- end -}}
+{{- if $annotations }}
+Annotations: {{ template "__default_sorted_pairs" $annotations }}
+{{- end -}}
+{{- end -}}
+
+{{- define "__default_sorted_pairs" -}}
+{{ range .SortedPairs }}
+ - {{ .Name }} = {{ .Value }}
+{{- end }}
+{{- end -}}
+
+{{/* Prometheus Alertmanager does not support .Message field
+{{- if .Message -}}
+    {{ .Message }}
+{{- else -}}
+    {{ template "__default_message" . }}
+{{- end }}
+*/}}
+
+{{ template "__default_message" . }}
+
+Sent by NOT_SUPPORTED_BY_PROMETHEUS {{/* .SentBy */}} (c) {{now | date "2006"}} Grafana Labs

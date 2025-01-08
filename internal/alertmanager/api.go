@@ -55,6 +55,7 @@ func (s *ApiServer) GetAlerts(w http.ResponseWriter, r *http.Request, params api
 			}
 			return
 		}
+
 		for _, alert := range *mimirResp.JSON200 {
 			mustFingerprint := strconv.FormatUint(prom_model.LabelsToSignature(alert.Labels), 16)
 			if alert.Fingerprint != mustFingerprint {
@@ -99,6 +100,7 @@ func (s *ApiServer) GetAlertGroups(w http.ResponseWriter, r *http.Request, param
 			}
 			return
 		}
+
 		for _, alertGroup := range *mimirResp.JSON200 {
 			alertGroup.Labels[s.service.serverConfig.Alerts.TenantLabel] = tenant
 			for a := range alertGroup.Alerts {
@@ -149,6 +151,7 @@ func (s *ApiServer) GetSilences(w http.ResponseWriter, r *http.Request, params a
 			}
 			return
 		}
+
 		equal := true
 		for _, silence := range *mimirResp.JSON200 {
 			silence.Matchers = append(silence.Matchers, api.Matcher{

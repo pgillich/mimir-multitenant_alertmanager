@@ -1,6 +1,5 @@
 # Generated from https://github.com/prometheus/alertmanager/blob/main/api/v2/openapi.yaml
 # by https://editor.swagger.io/ "Edit/Convert to OpenAPI 3"
-# Schema: https://github.com/OAI/OpenAPI-Specification/blob/main/schemas/v3.0/schema.yaml
 openapi: 3.0.1
 info:
   title: Alertmanager API
