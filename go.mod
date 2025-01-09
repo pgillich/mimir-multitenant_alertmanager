@@ -11,7 +11,7 @@ require (
 	github.com/goccy/go-yaml v1.15.13
 	github.com/oapi-codegen/oapi-codegen/v2 v2.4.1
 	github.com/oapi-codegen/runtime v1.1.1
-	github.com/pgillich/micro-server v0.0.5
+	github.com/pgillich/micro-server v0.0.6
 	github.com/prometheus/alertmanager v0.27.0
 	github.com/stretchr/testify v1.10.0
 	go.opentelemetry.io/otel/trace v1.33.0
