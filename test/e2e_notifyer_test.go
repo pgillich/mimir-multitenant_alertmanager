@@ -18,10 +18,10 @@ import (
 	mw_client_model "github.com/pgillich/micro-server/pkg/middleware/client/model"
 	srv_testutil "github.com/pgillich/micro-server/pkg/testutil"
 	srv_utils "github.com/pgillich/micro-server/pkg/utils"
-	srv_api "github.com/pgillich/mimir-multitenant_alertmanager/pkg/api/alertmanager"
 
 	"github.com/pgillich/mimir-multitenant_alertmanager/configs"
 	"github.com/pgillich/mimir-multitenant_alertmanager/internal/buildinfo"
+	srv_api "github.com/pgillich/mimir-multitenant_alertmanager/pkg/api/alertmanager"
 
 	// "github.com/pgillich/mimir-multitenant_alertmanager/internal/tracing"
 

@@ -157,24 +157,24 @@ func (s *Notify) callEvalNotif(ctx context.Context, jobNum int) {
 	jobName := "eval_notif"
 	jobID := fmt.Sprintf("#%d", jobNum)
 
-	notifyStat, err := mw_inner.CastResult[NotifyStat](
-		mw_inner.InternalMiddlewareChain(
-			mw_inner.TryCatch(),
-			mw_inner.Span(s.tr, jobID),
-			mw_inner.Logger(map[string]string{
-				"job_type": jobType,
-				"job_name": jobName,
-				"job_id":   jobID,
-			}, slog.LevelInfo, slog.LevelDebug),
-			mw_inner.Metrics(ctx, meter, "eval_notifications", "Eval Notofications", map[string]string{
-				"job_type": jobType,
-				"job_name": jobName,
-			}, middleware.FirstErr),
-			mw_inner.TryCatch(),
-		)(func(ctx context.Context) (interface{}, error) {
-			return s.evalNotif(ctx)
-		})(ctx),
-	)
+	notifyStat, err := mw_inner.InternalMiddlewareChainTyped[NotifyStat](
+		mw_inner.TryCatch(),
+		mw_inner.Span(s.tr, jobID),
+		mw_inner.Logger(map[string]string{
+			logger.KeyService: "notify-job",
+			"job_type":        jobType,
+			"job_name":        jobName,
+			"job_id":          jobID,
+		}, slog.LevelInfo, slog.LevelDebug),
+		mw_inner.Metrics(ctx, meter, "eval_notifications", "Eval Notofications", map[string]string{
+			logger.KeyService: "notify-job",
+			"job_type":        jobType,
+			"job_name":        jobName,
+		}, middleware.FirstErr),
+		mw_inner.TryCatch(),
+	)(func(ctx context.Context) (interface{}, error) {
+		return s.evalNotif(ctx)
+	})(ctx)
 
 	reportLevel := slog.LevelInfo
 	if err != nil {
