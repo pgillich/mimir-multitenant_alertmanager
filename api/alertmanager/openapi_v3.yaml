@@ -48,7 +48,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/receiver'
+                  $ref: '#/components/schemas/Receiver'
   /silences:
     get:
       tags:
@@ -518,7 +518,7 @@ components:
           receivers:
             type: array
             items:
-              $ref: '#/components/schemas/receiver'
+              $ref: '#/components/schemas/Receiver'
           fingerprint:
             type: string
           startsAt:
@@ -564,7 +564,7 @@ components:
         labels:
           $ref: '#/components/schemas/labelSet'
         receiver:
-          $ref: '#/components/schemas/receiver'
+          $ref: '#/components/schemas/Receiver'
         alerts:
           type: array
           items:
@@ -595,7 +595,7 @@ components:
           type: array
           items:
             type: string
-    receiver:
+    Receiver:
       required:
       - name
       type: object

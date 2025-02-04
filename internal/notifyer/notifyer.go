@@ -131,7 +131,9 @@ func (n *Notify) run(ctx context.Context, shutdown chan struct{}) {
 		close(started)
 		ticker := time.NewTicker(time.Duration(n.config.PollPeriodSec) * time.Second)
 		if n.testConfig.NotifierStartEvalImmediately {
-			n.callEvalNotif(ctx, jobNum)
+			stat, err := observeEvalNotif(n.tr, jobNum, n.evalNotif)(ctx)
+			_ = err
+			_ = stat
 		}
 		for {
 			select {
@@ -142,7 +144,9 @@ func (n *Notify) run(ctx context.Context, shutdown chan struct{}) {
 				log.Info("ctx.Done")
 				return
 			case <-ticker.C:
-				n.callEvalNotif(ctx, jobNum)
+				stat, err := observeEvalNotif(n.tr, jobNum, n.evalNotif)(ctx)
+				_ = err
+				_ = stat
 			}
 			jobNum++
 		}
@@ -150,48 +154,52 @@ func (n *Notify) run(ctx context.Context, shutdown chan struct{}) {
 	<-started
 }
 
-func (s *Notify) callEvalNotif(ctx context.Context, jobNum int) {
-	_, log := logger.FromContext(ctx)
-	meter := middleware.GetMeter(buildinfo.BuildInfo, log)
-	jobType := "backend"
-	jobName := "eval_notif"
-	jobID := fmt.Sprintf("#%d", jobNum)
+func observeEvalNotif(tr trace.Tracer, jobNum int, evalNotif func(context.Context) (NotifyStat, error)) func(context.Context) (NotifyStat, error) {
+	return func(ctx context.Context) (NotifyStat, error) {
+		_, log := logger.FromContext(ctx)
+		meter := middleware.GetMeter(buildinfo.BuildInfo, log)
+		jobType := "backend"
+		jobName := "eval_notif"
+		jobID := fmt.Sprintf("#%d", jobNum)
 
-	notifyStat, err := mw_inner.InternalMiddlewareChain(
-		mw_inner.TryCatch[NotifyStat](),
-		mw_inner.Span[NotifyStat](s.tr, jobID),
-		mw_inner.Logger[NotifyStat](map[string]string{
-			logger.KeyService: "notify-job",
-			"job_type":        jobType,
-			"job_name":        jobName,
-			"job_id":          jobID,
-		}, slog.LevelInfo, slog.LevelDebug),
-		mw_inner.Metrics[NotifyStat](ctx, meter, "eval_notifications", "Eval Notofications", map[string]string{
-			logger.KeyService: "notify-job",
-			"job_type":        jobType,
-			"job_name":        jobName,
-		}, middleware.FirstErr),
-		mw_inner.TryCatch[NotifyStat](),
-	)(func(ctx context.Context) (NotifyStat, error) {
-		return s.evalNotif(ctx)
-	})(ctx)
+		notifyStat, err := mw_inner.InternalMiddlewareChain(
+			mw_inner.TryCatch[NotifyStat](),
+			mw_inner.Span[NotifyStat](tr, jobID),
+			mw_inner.Logger[NotifyStat](map[string]string{
+				logger.KeyService: "notify-job",
+				"job_type":        jobType,
+				"job_name":        jobName,
+				"job_id":          jobID,
+			}, slog.LevelInfo, slog.LevelDebug),
+			mw_inner.Metrics[NotifyStat](ctx, meter, "eval_notifications", "Eval Notifications", map[string]string{
+				logger.KeyService: "notify-job",
+				"job_type":        jobType,
+				"job_name":        jobName,
+			}, middleware.FirstErr),
+			mw_inner.TryCatch[NotifyStat](),
+		)(func(ctx context.Context) (NotifyStat, error) {
+			return evalNotif(ctx)
+		})(ctx)
 
-	reportLevel := slog.LevelInfo
-	if err != nil {
-		reportLevel = slog.LevelError
+		reportLevel := slog.LevelInfo
+		if err != nil {
+			reportLevel = slog.LevelError
+		}
+		log.Log(ctx, reportLevel, "EVAL_NOTIF", "firing", notifyStat.Firing, "resolved", notifyStat.Resolved, logger.KeyError, err)
+
+		return notifyStat, err
 	}
-	log.Log(ctx, reportLevel, "EVAL_NOTIF", "firing", notifyStat.Firing, "resolved", notifyStat.Resolved, logger.KeyError, err)
 }
 
-func (s *Notify) evalNotif(ctx context.Context) (NotifyStat, error) {
+func (n *Notify) evalNotif(ctx context.Context) (NotifyStat, error) {
 	_, log := logger.FromContext(ctx)
 	notifyStat := NotifyStat{}
 	reportAlerts := []*am_types.Alert{}
 	resolvedAlerts := []*am_types.Alert{}
 	newAlerts := map[string]api.GettableAlert{}
-	lastAlerts := *s.lastAlerts.Load()
+	lastAlerts := *n.lastAlerts.Load()
 
-	alerts, err := s.getAlerts(ctx)
+	alerts, err := n.getAlerts(ctx)
 	if err != nil {
 		return notifyStat, err
 	}
@@ -243,21 +251,21 @@ func (s *Notify) evalNotif(ctx context.Context) (NotifyStat, error) {
 		ctx = notify.WithGroupLabels(ctx, prom_model.LabelSet{DefaultGroupLabel: DefaultGroupLabelValue})
 	*/
 	if len(reportAlerts) > 0 {
-		hasErr, err := s.notifier.Notify(ctx, reportAlerts...)
+		hasErr, err := n.notifier.Notify(ctx, reportAlerts...)
 		if err != nil {
 			return notifyStat, err
 		}
 		_ = hasErr
 	}
 	if len(resolvedAlerts) > 0 {
-		hasErr, err := s.resolvedNotifier.Notify(ctx, resolvedAlerts...)
+		hasErr, err := n.resolvedNotifier.Notify(ctx, resolvedAlerts...)
 		if err != nil {
 			return notifyStat, err
 		}
 		_ = hasErr
 	}
 
-	s.lastAlerts.Store(&newAlerts)
+	n.lastAlerts.Store(&newAlerts)
 
 	return notifyStat, nil
 }

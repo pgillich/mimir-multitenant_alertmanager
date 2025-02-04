@@ -167,5 +167,3 @@ image-kind:
 	kind load docker-image ${DOCKER_APP_PATH}/${DOCKER_APP_IMAGE} --name demo
 	sync && echo 3 | sudo tee /proc/sys/vm/drop_caches
 .PHONY: image-kind
-
-include openapi.mk
