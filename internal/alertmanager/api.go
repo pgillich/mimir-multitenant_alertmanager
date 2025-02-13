@@ -19,9 +19,9 @@ type ApiServer struct {
 }
 
 var (
-	ErrMimirResponse         = errors.New("mimir response")
-	ErrInvalidResponseStatus = errors.New("invalid response status")
-	ErrRenderResponse        = errors.New("unable to render response")
+	ErrMimirResponse, ErrMimirResponseWrap                 = logger.WrapErr(errors.New("mimir response"))
+	ErrInvalidResponseStatus, ErrInvalidResponseStatusWrap = logger.WrapErr(errors.New("invalid response status"))
+	ErrRenderResponse, ErrRenderResponseWrap               = logger.WrapErr(errors.New("unable to render response"))
 )
 
 func RequestHeaderSet(headerKey, headerValue string) func(ctx context.Context, req *http.Request) error {
@@ -40,18 +40,18 @@ func (s *ApiServer) GetAlerts(w http.ResponseWriter, r *http.Request, params api
 			r.Context(), &params, RequestHeaderSet(configs.HttpHeaderXscopeorgid, tenant),
 		)
 		if err != nil {
-			err = logger.Wrap(ErrMimirResponse, err)
+			err = ErrMimirResponseWrap(err)
 			log.Error("Unable to GetAlerts", logger.KeyError, err)
 			if err = api.GetAlerts500JSONResponse(err.Error()).VisitGetAlertsResponse(w); err != nil {
-				log.Error("Unable to render error response", logger.KeyError, logger.Wrap(ErrRenderResponse, err))
+				log.Error("Unable to render error response", logger.KeyError, ErrRenderResponseWrap(err))
 			}
 			return
 		}
 		if mimirResp.HTTPResponse.StatusCode != http.StatusOK || mimirResp.JSON200 == nil {
-			err = logger.Wrap(ErrInvalidResponseStatus, errors.New(mimirResp.HTTPResponse.Status))
+			err = ErrInvalidResponseStatusWrap(errors.New(mimirResp.HTTPResponse.Status))
 			log.Error("Unable to GetAlerts", logger.KeyError, err)
 			if err = api.GetAlerts500JSONResponse(err.Error()).VisitGetAlertsResponse(w); err != nil {
-				log.Error("Unable to render error response", logger.KeyError, logger.Wrap(ErrRenderResponse, err))
+				log.Error("Unable to render error response", logger.KeyError, ErrRenderResponseWrap(err))
 			}
 			return
 		}
@@ -72,7 +72,7 @@ func (s *ApiServer) GetAlerts(w http.ResponseWriter, r *http.Request, params api
 	}
 
 	if err := api.GetAlerts200JSONResponse(alerts).VisitGetAlertsResponse(w); err != nil {
-		log.Error("Unable to render response", logger.KeyError, logger.Wrap(ErrRenderResponse, err))
+		log.Error("Unable to render response", logger.KeyError, ErrRenderResponseWrap(err))
 	}
 }
 
@@ -85,18 +85,18 @@ func (s *ApiServer) GetAlertGroups(w http.ResponseWriter, r *http.Request, param
 			r.Context(), &params, RequestHeaderSet(configs.HttpHeaderXscopeorgid, tenant),
 		)
 		if err != nil {
-			err = logger.Wrap(ErrMimirResponse, err)
+			err = ErrMimirResponseWrap(err)
 			log.Error("Unable to GetAlerts", logger.KeyError, err)
 			if err = api.GetAlertGroups500JSONResponse(err.Error()).VisitGetAlertGroupsResponse(w); err != nil {
-				log.Error("Unable to render response", logger.KeyError, logger.Wrap(ErrRenderResponse, err))
+				log.Error("Unable to render response", logger.KeyError, ErrRenderResponseWrap(err))
 			}
 			return
 		}
 		if mimirResp.HTTPResponse.StatusCode != http.StatusOK || mimirResp.JSON200 == nil {
-			err = logger.Wrap(ErrInvalidResponseStatus, errors.New(mimirResp.HTTPResponse.Status))
+			err = ErrInvalidResponseStatusWrap(errors.New(mimirResp.HTTPResponse.Status))
 			log.Error("Unable to GetAlerts", logger.KeyError, err)
 			if err = api.GetAlertGroups500JSONResponse(err.Error()).VisitGetAlertGroupsResponse(w); err != nil {
-				log.Error("Unable to render error response", logger.KeyError, logger.Wrap(ErrRenderResponse, err))
+				log.Error("Unable to render error response", logger.KeyError, ErrRenderResponseWrap(err))
 			}
 			return
 		}
@@ -136,18 +136,18 @@ func (s *ApiServer) GetSilences(w http.ResponseWriter, r *http.Request, params a
 			r.Context(), &params, RequestHeaderSet(configs.HttpHeaderXscopeorgid, tenant),
 		)
 		if err != nil {
-			err = logger.Wrap(ErrMimirResponse, err)
+			err = ErrMimirResponseWrap(err)
 			log.Error("Unable to GetSilences", logger.KeyError, err)
 			if err = api.GetSilences500JSONResponse(err.Error()).VisitGetSilencesResponse(w); err != nil {
-				log.Error("Unable to render error response", logger.KeyError, logger.Wrap(ErrRenderResponse, err))
+				log.Error("Unable to render error response", logger.KeyError, ErrRenderResponseWrap(err))
 			}
 			return
 		}
 		if mimirResp.HTTPResponse.StatusCode != http.StatusOK || mimirResp.JSON200 == nil {
-			err = logger.Wrap(ErrInvalidResponseStatus, errors.New(mimirResp.HTTPResponse.Status))
+			err = ErrInvalidResponseStatusWrap(errors.New(mimirResp.HTTPResponse.Status))
 			log.Error("Unable to GetSilences", logger.KeyError, err)
 			if err = api.GetSilences500JSONResponse(err.Error()).VisitGetSilencesResponse(w); err != nil {
-				log.Error("Unable to render error response", logger.KeyError, logger.Wrap(ErrRenderResponse, err))
+				log.Error("Unable to render error response", logger.KeyError, ErrRenderResponseWrap(err))
 			}
 			return
 		}
@@ -165,6 +165,6 @@ func (s *ApiServer) GetSilences(w http.ResponseWriter, r *http.Request, params a
 	}
 
 	if err := api.GetSilences200JSONResponse(silences).VisitGetSilencesResponse(w); err != nil {
-		log.Error("Unable to render response", logger.KeyError, logger.Wrap(ErrRenderResponse, err))
+		log.Error("Unable to render response", logger.KeyError, ErrRenderResponseWrap(err))
 	}
 }
